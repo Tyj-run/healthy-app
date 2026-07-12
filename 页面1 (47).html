@@ -1,0 +1,2483 @@
+<html lang="zh-CN"><head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>
+   健康管家 - 您的个人健康助手
+  </title>
+  <script src="https://res.gemcoder.com/js/reload.js">
+  </script>
+  <script src="https://cdn.tailwindcss.com">
+  </script>
+  <link href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <script src="https://cdn.bootcdn.net/ajax/libs/echarts/5.4.3/echarts.min.js">
+  </script>
+  <script>tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        primary: '#52B788',
+        // 豆绿色主色调
+        secondary: '#40916C',
+        // 深豆绿色
+        accent: '#F59E0B',
+        danger: '#EF4444',
+        dark: '#1F2937',
+        light: '#F0FDF4',
+        // 豆绿色浅色背景
+        'primary-light': '#D1FAE5',
+        // 豆绿色浅色调
+        'secondary-light': '#B4E4D0',
+        'accent-light': '#FEF3C7'
+      },
+      fontFamily: {
+        sans: ['Inter', 'system-ui', 'sans-serif']
+      },
+      spacing: {
+        '128': '32rem'
+      },
+      boxShadow: {
+        'card': '0 4px 20px rgba(0, 0, 0, 0.08)',
+        'button': '0 4px 12px rgba(59, 130, 246, 0.3)'
+      }
+    }
+  }
+};</script>
+  <style type="text/tailwindcss">@layer utilities {
+      .content-auto {
+        content-visibility: auto;
+      }
+      .text-shadow {
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .bg-gradient-primary {
+        background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+      }
+      .bg-gradient-secondary {
+        background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+      }
+      .transition-transform-opacity {
+        transition-property: transform, opacity;
+      }
+      .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+      }
+      .scrollbar-hide {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+      .card-hover {
+        @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+      }
+.btn-primary {
+        @apply bg-primary text-white font-medium rounded-lg px-3 py-2 transition-all duration-300 hover:bg-primary/90 active:scale-100 shadow-button;
+      }
+      .btn-secondary {
+        @apply bg-white text-primary border border-primary font-medium rounded-lg px-4 py-2 transition-all duration-300 hover:bg-primary-light active:scale-100;
+      }
+      .btn-accent {
+        @apply bg-accent text-white font-medium rounded-lg px-4 py-2 transition-all duration-300 hover:bg-accent/90 active:scale-100 shadow-lg;
+      }
+.input-field {
+        @apply w-full px-3 py-2 rounded-lg border border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all duration-200;
+      }
+      .modal-overlay {
+        @apply fixed inset-0 bg-black/50 backdrop-blur-sm z-40;
+      }
+      .modal-content {
+        @apply bg-white rounded-2xl shadow-2xl mx-4 max-w-md w-full transform transition-all duration-300 z-50;
+      }
+      .badge {
+        @apply px-2 py-1 rounded-full text-xs font-medium;
+      }
+    }</style>
+ </head>
+ <body class="bg-light font-sans text-dark min-h-screen flex flex-col">
+  <!-- [MODULE] abc_主内容区域 -->
+  <div class="flex flex-col h-screen overflow-hidden max-w-full mx-auto">
+   <!-- [MODULE] d23_顶部导航栏 -->
+   <header class="bg-white shadow-sm py-2 px-3 sticky top-0 z-30">
+    <div class="flex justify-between items-center">
+     <div class="flex items-center space-x-2">
+      <i class="fas fa-heartbeat text-primary text-xl">
+      </i>
+      <h1 class="text-lg font-bold text-dark">
+       健康管家
+      </h1>
+     </div>
+     <div class="flex items-center space-x-4">
+      <button class="relative p-2 rounded-full hover:bg-gray-100 transition-colors" id="notification-btn">
+       <i class="fas fa-bell text-gray-600">
+       </i>
+       <span class="absolute top-1 right-1 w-2 h-2 bg-danger rounded-full">
+       </span>
+      </button>
+      <div class="w-8 h-8 rounded-full bg-primary-light flex items-center justify-center overflow-hidden">
+       <img alt="用户头像" class="w-full h-full object-cover" src="https://design.gemcoder.com/api/searchImage?query=user avatar, friendly face, smiling, white background, minimal style&amp;width=80&amp;height=80">
+      </div>
+     </div>
+    </div>
+   </header>
+   <!-- [/MODULE] d23_顶部导航栏 -- 应用顶部导航，包含应用图标、标题、通知按钮和用户头像 -->
+   <!-- [MODULE] efg_主内容滚动区域 -->
+   <main class="flex-1 overflow-y-auto scrollbar-hide pb-20">
+    <!-- [MODULE] 33f_仪表盘页面 -->
+    <div class="page-content p-4" id="home-page">
+     <!-- [MODULE] 567_仪表盘页面:欢迎区域 -->
+     <div class="mb-6">
+      <h2 class="text-[clamp(1.5rem,3vw,2rem)] font-bold text-dark">
+       您好，张先生
+      </h2>
+      <p class="text-gray-500">
+       今天是
+       <span class="font-medium text-dark" id="current-date">
+       </span>
+       ，祝您健康愉快！
+      </p>
+     </div>
+     <!-- [/MODULE] 567_仪表盘页面:欢迎区域 -- 显示用户问候语和当前日期 -->
+     <!-- [MODULE] 789_仪表盘页面:快捷功能区 -->
+     <div class="grid grid-cols-2 gap-4 mb-6">
+      <button class="bg-primary-light rounded-xl p-4 flex flex-col items-center justify-center card-hover" id="medication-btn">
+       <div class="w-12 h-12 rounded-full bg-primary flex items-center justify-center mb-3">
+        <i class="fas fa-pills text-white text-xl">
+        </i>
+       </div>
+       <span class="font-medium">
+        药品识别
+       </span>
+      </button>
+      <button class="bg-secondary-light rounded-xl p-4 flex flex-col items-center justify-center card-hover" id="reminder-btn">
+       <div class="w-12 h-12 rounded-full bg-secondary flex items-center justify-center mb-3">
+        <i class="fas fa-bell text-white text-xl">
+        </i>
+       </div>
+       <span class="font-medium">
+        用药提醒
+       </span>
+      </button>
+      <button class="bg-accent-light rounded-xl p-4 flex flex-col items-center justify-center card-hover" id="devices-btn">
+       <div class="w-12 h-12 rounded-full bg-accent flex items-center justify-center mb-3">
+        <i class="fas fa-bluetooth-b text-white text-xl">
+        </i>
+       </div>
+       <span class="font-medium">
+        设备管理
+       </span>
+      </button>
+      <button class="bg-purple-100 rounded-xl p-4 flex flex-col items-center justify-center card-hover" id="report-btn">
+       <div class="w-12 h-12 rounded-full bg-purple-500 flex items-center justify-center mb-3">
+        <i class="fas fa-file-medical-alt text-white text-xl">
+        </i>
+       </div>
+       <span class="font-medium">
+        健康报告
+       </span>
+      </button>
+     </div>
+     <!-- [/MODULE] 789_仪表盘页面:快捷功能区 -- 包含药品识别、用药提醒、设备管理和健康报告四个快捷功能按钮 -->
+     <!-- [MODULE] 123_仪表盘页面:今日用药提醒 -->
+     <div class="mb-6">
+      <div class="flex justify-between items-center mb-4">
+       <h3 class="text-lg font-bold">
+        今日用药提醒
+       </h3>
+       <a class="text-primary text-sm font-medium" href="javascript:void(0);">
+        查看全部
+       </a>
+      </div>
+      <div class="space-y-3">
+       <div class="bg-white rounded-xl p-4 shadow-card flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+         <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
+          <i class="fas fa-pills text-blue-500">
+          </i>
+         </div>
+         <div>
+          <h4 class="font-medium">
+           阿司匹林肠溶片
+          </h4>
+          <p class="text-sm text-gray-500">
+           每日2次，每次1片
+          </p>
+         </div>
+        </div>
+        <div class="text-right">
+         <span class="block text-sm font-medium">
+          08:00
+         </span>
+         <span class="badge bg-green-100 text-green-800 mt-1">
+          已完成
+         </span>
+        </div>
+       </div>
+       <div class="bg-white rounded-xl p-4 shadow-card flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+         <div class="w-12 h-12 rounded-full bg-yellow-100 flex items-center justify-center">
+          <i class="fas fa-pills text-yellow-500">
+          </i>
+         </div>
+         <div>
+          <h4 class="font-medium">
+           盐酸二甲双胍片
+          </h4>
+          <p class="text-sm text-gray-500">
+           每日3次，每次2片
+          </p>
+         </div>
+        </div>
+        <div class="text-right">
+         <span class="block text-sm font-medium">
+          12:30
+         </span>
+         <span class="badge bg-yellow-100 text-yellow-800 mt-1">
+          即将提醒
+         </span>
+        </div>
+       </div>
+       <div class="bg-white rounded-xl p-4 shadow-card flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+         <div class="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center">
+          <i class="fas fa-pills text-purple-500">
+          </i>
+         </div>
+         <div>
+          <h4 class="font-medium">
+           辛伐他汀片
+          </h4>
+          <p class="text-sm text-gray-500">
+           每日1次，每次1片
+          </p>
+         </div>
+        </div>
+        <div class="text-right">
+         <span class="block text-sm font-medium">
+          20:00
+         </span>
+         <span class="badge bg-gray-100 text-gray-800 mt-1">
+          未提醒
+         </span>
+        </div>
+       </div>
+      </div>
+     </div>
+     <!-- [/MODULE] 123_仪表盘页面:今日用药提醒 -- 显示今日用药计划，包括药品名称、服用剂量、时间和状态 -->
+     <!-- [MODULE] 456_仪表盘页面:健康数据 -->
+     <div class="mb-6">
+      <div class="flex justify-between items-center mb-4">
+       <h3 class="text-lg font-bold">
+        健康数据
+       </h3>
+       <a class="text-primary text-sm font-medium" href="javascript:void(0);">
+        更多数据
+       </a>
+      </div>
+      <div class="grid grid-cols-2 gap-4 mb-4">
+       <div class="bg-white rounded-xl p-4 shadow-card">
+        <div class="flex justify-between items-start mb-2">
+         <h4 class="text-sm text-gray-500">
+          心率
+         </h4>
+         <i class="fas fa-heart text-red-500">
+         </i>
+        </div>
+        <div class="flex items-end space-x-1">
+         <span class="text-2xl font-bold">
+          72
+         </span>
+         <span class="text-sm text-gray-500 mb-1">
+          bpm
+         </span>
+        </div>
+        <p class="text-xs text-green-500 mt-1 flex items-center">
+         <i class="fas fa-arrow-down mr-1">
+         </i>
+         较昨日下降2bpm
+        </p>
+       </div>
+       <div class="bg-white rounded-xl p-4 shadow-card">
+        <div class="flex justify-between items-start mb-2">
+         <h4 class="text-sm text-gray-500">
+          血糖
+         </h4>
+         <i class="fas fa-tint text-purple-500">
+         </i>
+        </div>
+        <div class="flex items-end space-x-1">
+         <span class="text-2xl font-bold">
+          5.4
+         </span>
+         <span class="text-sm text-gray-500 mb-1">
+          mmol/L
+         </span>
+        </div>
+        <p class="text-xs text-green-500 mt-1 flex items-center">
+         <i class="fas fa-arrow-down mr-1">
+         </i>
+         较昨日下降0.3mmol/L
+        </p>
+       </div>
+       <div class="bg-white rounded-xl p-4 shadow-card">
+        <div class="flex justify-between items-start mb-2">
+         <h4 class="text-sm text-gray-500">
+          睡眠
+         </h4>
+         <i class="fas fa-moon text-blue-500">
+         </i>
+        </div>
+        <div class="flex items-end space-x-1">
+         <span class="text-2xl font-bold">
+          7.2
+         </span>
+         <span class="text-sm text-gray-500 mb-1">
+          小时
+         </span>
+        </div>
+        <p class="text-xs text-red-500 mt-1 flex items-center">
+         <i class="fas fa-arrow-down mr-1">
+         </i>
+         较昨日减少0.5小时
+        </p>
+       </div>
+       <div class="bg-white rounded-xl p-4 shadow-card">
+        <div class="flex justify-between items-start mb-2">
+         <h4 class="text-sm text-gray-500">
+          步数
+         </h4>
+         <i class="fas fa-walking text-green-500">
+         </i>
+        </div>
+        <div class="flex items-end space-x-1">
+         <span class="text-2xl font-bold">
+          6,432
+         </span>
+         <span class="text-sm text-gray-500 mb-1">
+          步
+         </span>
+        </div>
+        <p class="text-xs text-green-500 mt-1 flex items-center">
+         <i class="fas fa-arrow-up mr-1">
+         </i>
+         较昨日增加1,245步
+        </p>
+       </div>
+      </div>
+      <div class="bg-white rounded-xl p-4 shadow-card">
+       <h4 class="text-sm text-gray-500 mb-3">
+        本周血糖趋势
+       </h4>
+       <div class="w-full h-48" id="blood-sugar-chart">
+       </div>
+      </div>
+     </div>
+     <!-- [/MODULE] 456_仪表盘页面:健康数据 -- 显示心率、血糖、睡眠和步数等健康数据，以及本周血糖趋势图表 -->
+    </div>
+    <!-- [/MODULE] 33f_仪表盘页面 -- 健康管家主界面，包含欢迎区域、快捷功能区、今日用药提醒和健康数据 -->
+    <!-- [MODULE] 34a_账号管理弹窗 -->
+    <div class="modal-overlay hidden" id="account-modal">
+     <div class="modal-content absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-6">
+      <div class="flex justify-between items-center mb-4">
+       <h3 class="text-xl font-bold">
+        账号管理
+       </h3>
+       <button class="text-gray-500 hover:text-gray-700" id="close-account-modal">
+        <i class="fas fa-times">
+        </i>
+       </button>
+      </div>
+      <div class="space-y-4">
+       <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">
+         用户名
+        </label>
+        <input class="input-field" id="account-username" type="text" value="张三">
+       </div>
+       <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">
+         绑定邮箱
+        </label>
+        <input class="input-field" id="account-email" type="email" value="zhangsan@example.com">
+       </div>
+       <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">
+         绑定手机号
+        </label>
+        <input class="input-field" id="account-phone" type="tel" value="13800138000">
+       </div>
+       <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">
+         密码
+        </label>
+        <input class="input-field" id="account-password" type="password" value="********">
+       </div>
+       <div class="flex justify-end space-x-2 mt-6">
+        <button class="btn-secondary" id="cancel-account-btn">
+         取消
+        </button>
+        <button class="btn-primary" id="save-account-btn">
+         保存
+        </button>
+       </div>
+      </div>
+     </div>
+    </div>
+    <!-- [/MODULE] 34a_账号管理弹窗 -- 包含用户名、邮箱、手机号和密码的修改功能 -->
+    <!-- [MODULE] nop_药品页面 -->
+    <div class="page-content hidden p-4" id="medicine-page">
+     <div class="flex justify-between items-center mb-6">
+      <h2 class="text-2xl font-bold text-dark">
+       我的药品
+      </h2>
+      <button class="btn-primary">
+       <i class="fas fa-plus mr-2">
+       </i>
+       添加药品
+      </button>
+     </div>
+     <!-- 药品列表 -->
+     <div class="space-y-4">
+      <div class="bg-white rounded-xl shadow-card p-4 card-hover">
+       <div class="flex items-center">
+        <img alt="布洛芬" class="w-20 h-20 object-cover rounded-lg" src="https://design.gemcoder.com/api/searchImage?query=ibuprofen medication bottle on white background, clean product photography&amp;width=80&amp;height=80">
+        <div class="ml-4 flex-1">
+         <h3 class="font-semibold text-lg">
+          布洛芬缓释胶囊
+         </h3>
+         <p class="text-gray-500">
+          每日2次，每次1片
+         </p>
+         <div class="flex items-center mt-2">
+          <span class="badge bg-primary-light text-primary">
+           已设置提醒
+          </span>
+          <span class="ml-2 text-sm text-gray-500">
+           周一至周五
+          </span>
+         </div>
+        </div>
+        <button class="text-gray-500 hover:text-primary">
+         <i class="fas fa-ellipsis-v text-xl">
+         </i>
+        </button>
+       </div>
+      </div>
+      <div class="bg-white rounded-xl shadow-card p-4 card-hover">
+       <div class="flex items-center">
+        <img alt="维生素C" class="w-20 h-20 object-cover rounded-lg" src="https://design.gemcoder.com/api/searchImage?query=vitamin c tablets bottle on white background, clean product photography&amp;width=80&amp;height=80">
+        <div class="ml-4 flex-1">
+         <h3 class="font-semibold text-lg">
+          维生素C片
+         </h3>
+         <p class="text-gray-500">
+          每日1次，每次2片
+         </p>
+         <div class="flex items-center mt-2">
+          <span class="badge bg-gray-100 text-gray-500">
+           未设置提醒
+          </span>
+         </div>
+        </div>
+        <button class="text-gray-500 hover:text-primary">
+         <i class="fas fa-ellipsis-v text-xl">
+         </i>
+        </button>
+       </div>
+      </div>
+     </div>
+     <!-- 提醒设置入口 -->
+     <div class="mt-8">
+      <h3 class="text-lg font-semibold mb-4">
+       提醒设置
+      </h3>
+      <div class="bg-white rounded-xl shadow-card p-4">
+       <div class="flex items-center justify-between">
+        <div>
+         <p class="font-medium">
+          语音提醒
+         </p>
+         <p class="text-sm text-gray-500">
+          用药时播放语音提示
+         </p>
+        </div>
+        <label class="relative inline-flex items-center cursor-pointer">
+         <input checked="" class="sr-only peer" type="checkbox">
+         <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[&quot;&quot;] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary">
+         </div>
+        </label>
+       </div>
+      </div>
+     </div>
+    </div>
+    <!-- [/MODULE] nop_药品页面 -- 展示用户添加的药品列表和提醒设置 -->
+    <!-- [MODULE] qrs_数据页面 -->
+    <div class="page-content hidden p-4" id="data-page">
+     <div class="flex justify-between items-center mb-6">
+      <h2 class="text-2xl font-bold text-dark">
+       健康数据
+      </h2>
+      <button class="btn-secondary">
+       <i class="fas fa-download mr-2">
+       </i>
+       生成报告
+      </button>
+     </div>
+     <!-- 实时心率 -->
+     <div class="bg-white rounded-xl shadow-card p-6 mb-6">
+      <div class="flex items-center justify-between mb-4">
+       <h3 class="font-semibold text-dark">
+        实时心率
+       </h3>
+       <span class="text-sm text-gray-500">
+        更新于:
+        <span id="heart-rate-time">
+         刚刚
+        </span>
+       </span>
+      </div>
+      <div class="flex flex-col items-center">
+       <div class="relative w-48 h-48 mb-4">
+        <div class="absolute inset-0 flex items-center justify-center">
+         <span class="text-4xl font-bold text-primary" id="current-heart-rate">
+          72
+         </span>
+         <span class="text-lg ml-2">
+          bpm
+         </span>
+        </div>
+        <canvas class="w-full h-full" id="heart-rate-pulse">
+        </canvas>
+       </div>
+       <div class="flex space-x-4">
+        <span class="text-sm text-gray-500">
+         静息心率:
+         <span class="text-dark">
+          65 bpm
+         </span>
+        </span>
+        <span class="text-sm text-gray-500">
+         最高心率:
+         <span class="text-dark">
+          180 bpm
+         </span>
+        </span>
+       </div>
+      </div>
+     </div>
+     <!-- 健康数据图表 -->
+     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      <div class="bg-white rounded-xl shadow-card p-4">
+       <h3 class="font-semibold mb-4">
+        心率趋势
+       </h3>
+       <div class="w-full h-80" id="heart-rate-chart">
+       </div>
+      </div>
+      <div class="bg-white rounded-xl shadow-card p-4">
+       <h3 class="font-semibold mb-4">
+        睡眠时长
+       </h3>
+       <div class="w-full h-80" id="sleep-chart">
+       </div>
+      </div>
+     </div>
+     <!-- 健康报告 -->
+     <div class="bg-white rounded-xl shadow-card p-4">
+      <h3 class="font-semibold mb-4">
+       本周健康报告
+      </h3>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+       <div class="bg-primary-light rounded-lg p-4">
+        <p class="text-sm text-gray-500">
+         平均心率
+        </p>
+        <p class="text-2xl font-bold text-primary">
+         72 bpm
+        </p>
+       </div>
+       <div class="bg-primary-light rounded-lg p-4">
+        <p class="text-sm text-gray-500">
+         平均睡眠
+        </p>
+        <p class="text-2xl font-bold text-primary">
+         7.5 小时
+        </p>
+       </div>
+       <div class="bg-primary-light rounded-lg p-4">
+        <p class="text-sm text-gray-500">
+         运动步数
+        </p>
+        <p class="text-2xl font-bold text-primary">
+         8,500 步
+        </p>
+       </div>
+       <div class="bg-primary-light rounded-lg p-4">
+        <p class="text-sm text-gray-500">
+         BMI指数
+        </p>
+        <p class="text-2xl font-bold text-primary" id="bmi-value">
+         22.86
+        </p>
+       </div>
+      </div>
+     </div>
+    </div>
+    <!-- [/MODULE] qrs_数据页面 -- 展示健康数据图表和生成健康报告 -->
+   </main>
+   <!-- [MODULE] tuv_我的页面 -->
+   <div class="page-content hidden p-3 overflow-y-auto max-h-[calc(100vh-80px)]" id="profile-page">
+    <div class="text-center mb-4 relative pt-1">
+     <div class="relative inline-block">
+      <img alt="用户头像" class="w-32 h-32 rounded-full object-cover cursor-pointer hover:opacity-90 transition-opacity" id="user-avatar" src="https://design.gemcoder.com/api/searchImage?query=user profile avatar on white background, clean and modern design&amp;width=160&amp;height=160">
+      <button class="absolute bottom-1 right-1 w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center shadow-lg hover:bg-secondary transition-colors" data-ytextravalue="extra-9je49b0hx" id="change-avatar-btn">
+       <i class="fas fa-camera" data-ytindex="0" data-ytoriginindex="0" data-ytparentvalue="extra-9je49b0hx" style="width:;height:">
+       </i>
+      </button>
+     </div>
+     <div class="flex items-center justify-center mb-2">
+      <h2 class="text-lg font-bold text-dark mr-2" id="profile-name">
+       张三
+      </h2>
+      <button class="text-primary hover:text-secondary text-sm" id="edit-name-btn">
+       <i class="fas fa-edit">
+       </i>
+      </button>
+     </div>
+     <p class="text-gray-500">
+      男，30岁
+     </p>
+    </div>
+    <!-- 个人信息 -->
+    <div class="bg-white rounded-xl shadow-card p-4 mb-6">
+     <h3 class="font-semibold mb-4">
+      个人信息
+     </h3>
+     <div class="space-y-4">
+      <div class="flex justify-between items-center">
+       <span class="text-gray-500">
+        身高
+       </span>
+       <span class="text-dark">
+        175 cm
+       </span>
+      </div>
+      <div class="flex justify-between items-center">
+       <span class="text-gray-500">
+        体重
+       </span>
+       <span class="text-dark">
+        70 kg
+       </span>
+      </div>
+      <div class="flex justify-between items-center">
+       <span class="text-gray-500">
+        血型
+       </span>
+       <span class="text-dark">
+        A型
+       </span>
+      </div>
+      <div class="flex justify-end mt-4">
+       <button class="btn-secondary" id="edit-profile-btn">
+        <i class="fas fa-edit mr-2">
+        </i>
+        编辑个人信息
+       </button>
+      </div>
+     </div>
+    </div>
+    <!-- 设置选项 -->
+    <div class="bg-white rounded-xl shadow-card mb-6">
+     <div class="border-b border-gray-100 p-4">
+      <h3 class="font-semibold">
+       设置
+      </h3>
+     </div>
+     <div class="space-y-1">
+      <a class="flex justify-between items-center p-4 hover:bg-gray-50 setting-item" data-setting="account" href="javascript:void(0);">
+       <div class="flex items-center">
+        <i class="fas fa-user-circle text-primary mr-3">
+        </i>
+        <span>
+         账号管理
+        </span>
+       </div>
+       <i class="fas fa-chevron-right text-gray-400">
+       </i>
+      </a>
+      <a class="flex justify-between items-center p-4 hover:bg-gray-50 setting-item" data-setting="notification" href="javascript:void(0);">
+       <div class="flex items-center">
+        <i class="fas fa-bell text-primary mr-3">
+        </i>
+        <span>
+         通知设置
+        </span>
+       </div>
+       <i class="fas fa-chevron-right text-gray-400">
+       </i>
+      </a>
+      <a class="flex justify-between items-center p-4 hover:bg-gray-50 setting-item" data-setting="device" href="javascript:void(0);">
+       <div class="flex items-center">
+        <i class="fas fa-bluetooth text-primary mr-3">
+        </i>
+        <span>
+         设备管理
+        </span>
+       </div>
+       <i class="fas fa-chevron-right text-gray-400">
+       </i>
+      </a>
+      <a class="flex justify-between items-center p-4 hover:bg-gray-50 setting-item" data-setting="privacy" href="javascript:void(0);">
+       <div class="flex items-center">
+        <i class="fas fa-shield-alt text-primary mr-3">
+        </i>
+        <span>
+         隐私设置
+        </span>
+       </div>
+       <i class="fas fa-chevron-right text-gray-400">
+       </i>
+      </a>
+      <a class="flex justify-between items-center p-4 hover:bg-gray-50 setting-item" data-setting="language" href="javascript:void(0);">
+       <div class="flex items-center">
+        <i class="fas fa-language text-primary mr-3">
+        </i>
+        <span>
+         语言设置
+        </span>
+       </div>
+       <i class="fas fa-chevron-right text-gray-400">
+       </i>
+      </a>
+      <a class="flex justify-between items-center p-4 hover:bg-gray-50 setting-item" data-setting="theme" href="javascript:void(0);">
+       <div class="flex items-center">
+        <i class="fas fa-moon text-primary mr-3">
+        </i>
+        <span>
+         主题设置
+        </span>
+       </div>
+       <i class="fas fa-chevron-right text-gray-400">
+       </i>
+      </a>
+      <a class="flex justify-between items-center p-4 hover:bg-gray-50 setting-item" data-setting="sync" href="javascript:void(0);">
+       <div class="flex items-center">
+        <i class="fas fa-cloud text-primary mr-3">
+        </i>
+        <span>
+         数据同步
+        </span>
+       </div>
+       <i class="fas fa-chevron-right text-gray-400">
+       </i>
+      </a>
+      <a class="flex justify-between items-center p-4 hover:bg-gray-50 setting-item" data-setting="export" href="javascript:void(0);">
+       <div class="flex items-center">
+        <i class="fas fa-download text-primary mr-3">
+        </i>
+        <span>
+         数据导出
+        </span>
+       </div>
+       <i class="fas fa-chevron-right text-gray-400">
+       </i>
+      </a>
+      <a class="flex justify-between items-center p-4 hover:bg-gray-50 setting-item" data-setting="about" href="javascript:void(0);">
+       <div class="flex items-center">
+        <i class="fas fa-question-circle text-primary mr-3">
+        </i>
+        <span>
+         关于我们
+        </span>
+       </div>
+       <i class="fas fa-chevron-right text-gray-400">
+       </i>
+      </a>
+     </div>
+    </div>
+    <!-- 帮助中心 -->
+    <div class="bg-white rounded-xl shadow-card">
+     <div class="border-b border-gray-100 p-4">
+      <h3 class="font-semibold">
+       帮助中心
+      </h3>
+     </div>
+     <div class="space-y-1">
+      <a class="flex justify-between items-center p-4 hover:bg-gray-50 setting-item" data-setting="faq" href="javascript:void(0);">
+       <div class="flex items-center">
+        <i class="fas fa-question-circle text-primary mr-3">
+        </i>
+        <span>
+         常见问题
+        </span>
+       </div>
+       <i class="fas fa-chevron-right text-gray-400">
+       </i>
+      </a>
+      <a class="flex justify-between items-center p-4 hover:bg-gray-50" href="javascript:void(0);">
+       <div class="flex items-center">
+        <i class="fas fa-headset text-primary mr-3">
+        </i>
+        <span>
+         联系客服
+        </span>
+       </div>
+       <i class="fas fa-chevron-right text-gray-400">
+       </i>
+      </a>
+     </div>
+    </div>
+   </div>
+   <!-- [/MODULE] tuv_我的页面 -- 展示个人信息、设置选项和帮助中心 -->
+   <!-- [/MODULE] efg_主内容滚动区域 -- 包含仪表盘页面的可滚动内容 -->
+   <nav class="bg-white shadow-[0_-2px_10px_rgba(0,0,0,0.05)] fixed bottom-0 left-0 right-0 z-30 py-1 px-4">
+    <div class="flex justify-around">
+     <a class="flex flex-col items-center py-1 text-primary" data-page="home-page" href="javascript:void(0);">
+      <i class="fas fa-home text-base">
+      </i>
+      <span class="text-[10px] mt-0.5">
+       首页
+      </span>
+     </a>
+     <a class="flex flex-col items-center py-1 text-gray-500" data-page="medicine-page" href="javascript:void(0);">
+      <i class="fas fa-pills text-lg">
+      </i>
+      <span class="text-xs mt-1">
+       药品
+      </span>
+     </a>
+     <a class="flex flex-col items-center py-1 text-gray-500" data-page="data-page" href="javascript:void(0);">
+      <i class="fas fa-chart-line text-lg">
+      </i>
+      <span class="text-xs mt-1">
+       数据
+      </span>
+     </a>
+     <a class="flex flex-col items-center py-1 text-gray-500" data-page="profile-page" href="javascript:void(0);">
+      <i class="fas fa-user text-lg">
+      </i>
+      <span class="text-xs mt-1">
+       我的
+      </span>
+     </a>
+    </div>
+   </nav>
+  </div>
+  <!-- [/MODULE] abc_主内容区域 -- 包含顶部导航栏、主内容滚动区域和底部导航栏 -->
+  <!-- [MODULE] xyz_通知弹窗 -->
+  <div class="fixed top-16 right-4 w-80 bg-white rounded-xl shadow-lg z-50 hidden" id="notification-panel">
+   <div class="p-3 border-b border-gray-100">
+    <h3 class="font-semibold">
+     通知消息
+    </h3>
+   </div>
+   <div class="divide-y divide-gray-100 max-h-80 overflow-y-auto">
+    <div class="p-3 hover:bg-gray-50 cursor-pointer">
+     <div class="flex items-start">
+      <div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center mr-3">
+       <i class="fas fa-pills text-primary text-xs">
+       </i>
+      </div>
+      <div class="flex-1">
+       <p class="text-sm font-medium">
+        用药提醒
+       </p>
+       <p class="text-xs text-gray-500">
+        您该服用降压药了
+       </p>
+       <p class="text-xs text-gray-400 mt-1">
+        5分钟前
+       </p>
+      </div>
+     </div>
+    </div>
+    <div class="p-3 hover:bg-gray-50 cursor-pointer">
+     <div class="flex items-start">
+      <div class="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center mr-3">
+       <i class="fas fa-bell text-accent text-xs">
+       </i>
+      </div>
+      <div class="flex-1">
+       <p class="text-sm font-medium">
+        健康报告
+       </p>
+       <p class="text-xs text-gray-500">
+        您的本周健康报告已生成
+       </p>
+       <p class="text-xs text-gray-400 mt-1">
+        1小时前
+       </p>
+      </div>
+     </div>
+    </div>
+    <div class="p-3 hover:bg-gray-50 cursor-pointer">
+     <div class="flex items-start">
+      <div class="w-8 h-8 rounded-full bg-secondary/20 flex items-center justify-center mr-3">
+       <i class="fas fa-heartbeat text-secondary text-xs">
+       </i>
+      </div>
+      <div class="flex-1">
+       <p class="text-sm font-medium">
+        心率异常
+       </p>
+       <p class="text-xs text-gray-500">
+        您的心率超过正常范围
+       </p>
+       <p class="text-xs text-gray-400 mt-1">
+        昨天
+       </p>
+      </div>
+     </div>
+    </div>
+   </div>
+   <div class="p-3 text-center border-t border-gray-100">
+    <a class="text-primary text-sm" href="javascript:void(0);">
+     查看全部通知
+    </a>
+   </div>
+  </div>
+  <!-- [/MODULE] xyz_通知弹窗 -- 显示用户的通知消息列表 -->
+  <!-- [JSMOD] xyz_设置功能交互 -->
+  <script id="settings-script">
+   document.addEventListener('DOMContentLoaded', function () {
+  // 为所有设置项添加点击事件
+  var settingItems = document.querySelectorAll('.setting-item');
+  settingItems.forEach(function (item) {
+    item.addEventListener('click', function () {
+      var settingType = this.dataset.setting;
+      openSettingModal(settingType);
+    });
+  });
+
+  // 打开设置弹窗
+  function openSettingModal(type) {
+    var modalContent = '';
+    switch (type) {
+      case 'account':
+        modalContent = "<div class=\"modal-content mx-auto mt-20 p-6\">\n                <div class=\"flex justify-between items-center mb-4\">\n                  <h3 class=\"text-xl font-bold\">\u8D26\u53F7\u7BA1\u7406</h3>\n                  <button class=\"close-modal text-gray-500 hover:text-gray-700\">\n                    <i class=\"fas fa-times\"></i>\n                  </button>\n                </div>\n                <div class=\"space-y-4\">\n                  <div class=\"flex items-center justify-between p-3 border-b\">\n                    <span>\u4FEE\u6539\u5BC6\u7801</span>\n                    <i class=\"fas fa-chevron-right text-gray-400\"></i>\n                  </div>\n                  <div class=\"flex items-center justify-between p-3 border-b\">\n                    <span>\u7ED1\u5B9A\u624B\u673A\u53F7</span>\n                    <i class=\"fas fa-chevron-right text-gray-400\"></i>\n                  </div>\n                  <div class=\"flex items-center justify-between p-3 border-b\">\n                    <span>\u7ED1\u5B9A\u90AE\u7BB1</span>\n                    <i class=\"fas fa-chevron-right text-gray-400\"></i>\n                  </div>\n                  <div class=\"flex items-center justify-between p-3 text-red-500\">\n                    <span>\u9000\u51FA\u767B\u5F55</span>\n                  </div>\n                </div>\n              </div>";
+        break;
+      case 'theme':
+        modalContent = "<div class=\"modal-content mx-auto mt-20 p-6\">\n                <div class=\"flex justify-between items-center mb-4\">\n                  <h3 class=\"text-xl font-bold\">\u4E3B\u9898\u8BBE\u7F6E</h3>\n                  <button class=\"close-modal text-gray-500 hover:text-gray-700\">\n                    <i class=\"fas fa-times\"></i>\n                  </button>\n                </div>\n                <div class=\"space-y-3\">\n                  <div class=\"flex items-center justify-between p-3 border rounded-lg\">\n                    <span>\u767D\u5929\u6A21\u5F0F</span>\n                    <input type=\"radio\" name=\"theme\" value=\"light\" checked>\n                  </div>\n                  <div class=\"flex items-center justify-between p-3 border rounded-lg\">\n                    <span>\u9ED1\u591C\u6A21\u5F0F</span>\n                    <input type=\"radio\" name=\"theme\" value=\"dark\">\n                  </div>\n                </div>\n              </div>";
+        break;
+      case 'language':
+        modalContent = "<div class=\"modal-content mx-auto mt-20 p-6\">\n                <div class=\"flex justify-between items-center mb-4\">\n                  <h3 class=\"text-xl font-bold\">\u8BED\u8A00\u8BBE\u7F6E</h3>\n                  <button class=\"close-modal text-gray-500 hover:text-gray-700\">\n                    <i class=\"fas fa-times\"></i>\n                  </button>\n                </div>\n                <div class=\"space-y-3\">\n                  <div class=\"flex items-center justify-between p-3 border rounded-lg\">\n                    <span>\u7B80\u4F53\u4E2D\u6587</span>\n                    <input type=\"radio\" name=\"language\" value=\"zh\" checked>\n                  </div>\n                  <div class=\"flex items-center justify-between p-3 border rounded-lg\">\n                    <span>English</span>\n                    <input type=\"radio\" name=\"language\" value=\"en\">\n                  </div>\n                </div>\n              </div>";
+        break;
+      case 'about':
+        modalContent = "<div class=\"modal-content mx-auto mt-20 p-6 max-w-md\">\n                <div class=\"flex justify-between items-center mb-4\">\n                  <h3 class=\"text-xl font-bold\">\u5173\u4E8E\u6211\u4EEC</h3>\n                  <button class=\"close-modal text-gray-500 hover:text-gray-700\">\n                    <i class=\"fas fa-times\"></i>\n                  </button>\n                </div>\n                <div class=\"text-center mb-4\">\n                  <img src=\"./api/searchImage?query=health app logo with green cross, modern design on white background&amp;width=80&amp;height=80\" alt=\"\u5065\u5EB7\u7BA1\u5BB6\" class=\"w-20 h-20 mx-auto rounded-full mb-3\">\n                  <h4 class=\"text-lg font-semibold\">\u5065\u5EB7\u7BA1\u5BB6 v1.0.0</h4>\n                </div>\n                <div class=\"space-y-3 text-sm text-gray-600\">\n                  <p>\u60A8\u7684\u4E2A\u4EBA\u5065\u5EB7\u52A9\u624B\uFF0C\u5E2E\u52A9\u60A8\u7BA1\u7406\u5065\u5EB7\u6570\u636E\uFF0C\u8BB0\u5F55\u751F\u6D3B\u4E60\u60EF\u3002</p>\n                  <p>\xA9 2025 \u5065\u5EB7\u7BA1\u5BB6 \u7248\u6743\u6240\u6709</p>\n                </div>\n              </div>";
+        break;
+    }
+
+    // 创建模态框
+    var modalOverlay = document.createElement('div');
+    modalOverlay.className = 'modal-overlay fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-start justify-center';
+    modalOverlay.innerHTML = modalContent;
+    document.body.appendChild(modalOverlay);
+
+    // 关闭模态框
+    var closeButtons = modalOverlay.querySelectorAll('.close-modal');
+    closeButtons.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        document.body.removeChild(modalOverlay);
+      });
+    });
+
+    // 点击背景关闭
+    modalOverlay.addEventListener('click', function (e) {
+      if (e.target === modalOverlay) {
+        document.body.removeChild(modalOverlay);
+      }
+    });
+  }
+});
+  </script>
+  <!-- [/JSMOD] xyz_设置功能交互 -- 实现所有设置项的弹窗和交互逻辑 -->
+  <!-- [MODULE] xyz_姓名编辑弹窗 -->
+  <div class="modal-overlay hidden" id="edit-name-modal">
+   <div class="modal-content absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-6">
+    <div class="flex justify-between items-center mb-4">
+     <h3 class="text-lg font-bold">
+      修改姓名
+     </h3>
+     <button class="text-gray-500 hover:text-dark" id="close-name-modal-btn">
+      <i class="fas fa-times">
+      </i>
+     </button>
+    </div>
+    <form id="name-form">
+     <div class="mb-4">
+      <label class="block text-gray-700 text-sm font-medium mb-2" for="name-input">
+       新姓名
+      </label>
+      <input class="input-field" id="name-input" placeholder="请输入新姓名" required="" type="text">
+     </div>
+     <div class="flex justify-end space-x-2">
+      <button class="btn-secondary" id="cancel-name-btn" type="button">
+       取消
+      </button>
+      <button class="btn-primary" type="submit">
+       保存
+      </button>
+     </div>
+    </form>
+   </div>
+  </div>
+  <!-- [/MODULE] xyz_姓名编辑弹窗 -- 用于修改用户姓名 -->
+  <!-- [MODULE] xyz_头像上传弹窗 -->
+  <div class="modal-overlay hidden" id="avatar-modal">
+   <div class="modal-content absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-6">
+    <div class="flex justify-between items-center mb-6">
+     <h3 class="text-xl font-bold text-dark">
+      更换头像
+     </h3>
+     <button class="text-gray-500 hover:text-dark" id="close-avatar-modal">
+      <i class="fas fa-times text-xl">
+      </i>
+     </button>
+    </div>
+    <div class="space-y-4">
+     <div class="flex justify-center">
+      <img alt="当前头像" class="w-32 h-32 rounded-full object-cover" id="current-avatar-preview" src="https://design.gemcoder.com/api/searchImage?query=user profile avatar on white background, clean and modern design&amp;width=120&amp;height=120">
+     </div>
+     <div class="grid grid-cols-2 gap-4">
+      <button class="btn-primary flex items-center justify-center" id="take-photo-avatar">
+       <i class="fas fa-camera mr-2">
+       </i>
+       拍照
+      </button>
+      <button class="btn-secondary flex items-center justify-center" id="upload-avatar">
+       <i class="fas fa-upload mr-2">
+       </i>
+       从相册选择
+      </button>
+     </div>
+     <div class="flex justify-end">
+      <button class="btn-secondary" id="cancel-avatar-btn" type="button">
+       取消
+      </button>
+     </div>
+    </div>
+   </div>
+  </div>
+  <!-- [/MODULE] xyz_头像上传弹窗 -- 允许用户拍照或从相册选择更换头像 -->
+  <!-- [MODULE] wxy_个人信息编辑弹窗 -->
+  <div class="modal-overlay hidden" id="edit-profile-modal">
+   <div class="modal-content absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-6">
+    <div class="flex justify-between items-center mb-6">
+     <h3 class="text-xl font-bold text-dark">
+      编辑个人信息
+     </h3>
+     <button class="text-gray-500 hover:text-dark" id="close-modal-btn">
+      <i class="fas fa-times text-xl">
+      </i>
+     </button>
+    </div>
+    <form id="profile-form">
+     <div class="space-y-4">
+      <div>
+       <label class="block text-sm font-medium text-gray-700 mb-1">
+        身高 (cm)
+       </label>
+       <input class="input-field" id="height-input" max="250" min="100" type="number" value="175">
+      </div>
+      <div>
+       <label class="block text-sm font-medium text-gray-700 mb-1">
+        体重 (kg)
+       </label>
+       <input class="input-field" id="weight-input" max="300" min="30" type="number" value="70">
+      </div>
+      <div>
+       <label class="block text-sm font-medium text-gray-700 mb-1">
+        血型
+       </label>
+       <select class="input-field" id="blood-type-input">
+        <option selected="" value="A型">
+         A型
+        </option>
+        <option value="B型">
+         B型
+        </option>
+        <option value="O型">
+         O型
+        </option>
+        <option value="AB型">
+         AB型
+        </option>
+       </select>
+      </div>
+     </div>
+     <div class="flex justify-end mt-6">
+      <button class="btn-secondary mr-2" id="cancel-btn" type="button">
+       取消
+      </button>
+      <button class="btn-primary" type="submit">
+       保存
+      </button>
+     </div>
+    </form>
+   </div>
+  </div>
+  <!-- [/MODULE] wxy_个人信息编辑弹窗 -- 允许编辑身高、体重和血型信息 -->
+  <!-- [MODULE] klm_药品识别模态框 -->
+  <div class="modal-overlay hidden flex items-center justify-center" id="medication-modal">
+   <div class="modal-content max-h-[90vh] overflow-y-auto">
+    <div class="p-5">
+     <div class="flex justify-between items-center mb-4">
+      <h3 class="text-xl font-bold">
+       药品识别
+      </h3>
+      <button class="text-gray-500 hover:text-dark" id="close-medication-modal">
+       <i class="fas fa-times text-xl">
+       </i>
+      </button>
+     </div>
+     <div class="mb-5">
+      <p class="text-gray-600 mb-4">
+       拍摄药盒包装，系统将自动识别药品信息
+      </p>
+      <div class="w-full aspect-square bg-gray-100 rounded-xl overflow-hidden flex items-center justify-center mb-4" id="camera-container">
+       <img alt="相机预览" class="w-full h-full object-cover" id="camera-placeholder" src="https://design.gemcoder.com/api/searchImage?query=medicine box recognition interface, camera viewfinder, white background, minimal design&amp;width=400&amp;height=400">
+       <div class="hidden w-full h-full" id="camera-preview">
+       </div>
+      </div>
+      <div class="flex space-x-3">
+       <button class="btn-primary flex-1 flex items-center justify-center" id="take-photo-btn">
+        <i class="fas fa-camera mr-2">
+        </i>
+        拍摄
+       </button>
+       <button class="btn-secondary flex-1 flex items-center justify-center" id="upload-photo-btn">
+        <i class="fas fa-upload mr-2">
+        </i>
+        从相册选择
+       </button>
+      </div>
+     </div>
+     <div class="hidden" id="medicine-result">
+      <div class="p-4 bg-green-50 rounded-xl mb-4">
+       <h4 class="font-medium text-green-800 mb-1">
+        识别成功
+       </h4>
+       <p class="text-sm text-green-700">
+        已成功识别药品信息
+       </p>
+      </div>
+      <div class="mb-4">
+       <label class="block text-sm font-medium text-gray-700 mb-1">
+        药品名称
+       </label>
+       <input class="input-field" readonly="" type="text" value="阿司匹林肠溶片">
+      </div>
+      <div class="mb-4">
+       <label class="block text-sm font-medium text-gray-700 mb-1">
+        生产厂家
+       </label>
+       <input class="input-field" readonly="" type="text" value="拜耳医药保健有限公司">
+      </div>
+      <div class="mb-4">
+       <label class="block text-sm font-medium text-gray-700 mb-1">
+        规格
+       </label>
+       <input class="input-field" readonly="" type="text" value="100mg*30片/盒">
+      </div>
+      <div class="mb-5">
+       <label class="block text-sm font-medium text-gray-700 mb-1">
+        服用剂量
+       </label>
+       <input class="input-field" type="text" value="每日2次，每次1片">
+      </div>
+      <button class="btn-accent w-full flex items-center justify-center" id="set-reminder-btn">
+       <i class="fas fa-bell mr-2">
+       </i>
+       设置用药提醒
+      </button>
+     </div>
+    </div>
+   </div>
+  </div>
+  <!-- [/MODULE] klm_药品识别模态框 -- 药品识别功能的模态窗口，包含相机拍摄、相册上传和药品信息展示 -->
+  <!-- [MODULE] nop_设置提醒模态框 -->
+  <div class="modal-overlay hidden flex items-center justify-center" id="reminder-modal">
+   <div class="modal-content">
+    <div class="p-5">
+     <div class="flex justify-between items-center mb-4">
+      <h3 class="text-xl font-bold">
+       设置用药提醒
+      </h3>
+      <button class="text-gray-500 hover:text-dark" id="close-reminder-modal">
+       <i class="fas fa-times text-xl">
+       </i>
+      </button>
+     </div>
+     <div class="mb-5">
+      <div class="mb-4">
+       <label class="block text-sm font-medium text-gray-700 mb-1">
+        药品名称
+       </label>
+       <input class="input-field" readonly="" type="text" value="阿司匹林肠溶片">
+      </div>
+      <div class="mb-4">
+       <label class="block text-sm font-medium text-gray-700 mb-1">
+        服用剂量
+       </label>
+       <input class="input-field" type="text" value="每日2次，每次1片">
+      </div>
+      <div class="mb-4">
+       <label class="block text-sm font-medium text-gray-700 mb-1">
+        提醒时间
+       </label>
+       <div class="space-y-3" id="time-slots">
+        <div class="flex items-center space-x-3 time-slot">
+         <input class="input-field" type="time" value="08:00">
+         <button class="text-primary hover:text-primary/80 delete-time-btn">
+          <i class="fas fa-trash-alt">
+          </i>
+         </button>
+        </div>
+        <div class="flex items-center space-x-3 time-slot">
+         <input class="input-field" type="time" value="20:00">
+         <button class="text-primary hover:text-primary/80 delete-time-btn">
+          <i class="fas fa-trash-alt">
+          </i>
+         </button>
+        </div>
+       </div>
+       <button class="text-primary hover:text-primary/80 text-sm font-medium flex items-center mt-2" id="add-time-btn">
+        <i class="fas fa-plus-circle mr-1">
+        </i>
+        添加时间
+       </button>
+      </div>
+      <div class="mb-4">
+       <label class="block text-sm font-medium text-gray-700 mb-2">
+        重复
+       </label>
+       <div class="grid grid-cols-7 gap-2">
+        <div class="text-center">
+         <input class="sr-only" id="repeat-1" type="checkbox">
+         <label class="inline-block w-8 h-8 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center text-sm cursor-pointer hover:bg-primary/10" for="repeat-1">
+          一
+         </label>
+        </div>
+        <div class="text-center">
+         <input class="sr-only" id="repeat-2" type="checkbox">
+         <label class="inline-block w-8 h-8 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center text-sm cursor-pointer hover:bg-primary/10" for="repeat-2">
+          二
+         </label>
+        </div>
+        <div class="text-center">
+         <input class="sr-only" id="repeat-3" type="checkbox">
+         <label class="inline-block w-8 h-8 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center text-sm cursor-pointer hover:bg-primary/10" for="repeat-3">
+          三
+         </label>
+        </div>
+        <div class="text-center">
+         <input class="sr-only" id="repeat-4" type="checkbox">
+         <label class="inline-block w-8 h-8 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center text-sm cursor-pointer hover:bg-primary/10" for="repeat-4">
+          四
+         </label>
+        </div>
+        <div class="text-center">
+         <input class="sr-only" id="repeat-5" type="checkbox">
+         <label class="inline-block w-8 h-8 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center text-sm cursor-pointer hover:bg-primary/10" for="repeat-5">
+          五
+         </label>
+        </div>
+        <div class="text-center">
+         <input class="sr-only" id="repeat-6" type="checkbox">
+         <label class="inline-block w-8 h-8 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center text-sm cursor-pointer hover:bg-primary/10" for="repeat-6">
+          六
+         </label>
+        </div>
+        <div class="text-center">
+         <input class="sr-only" id="repeat-0" type="checkbox">
+         <label class="inline-block w-8 h-8 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center text-sm cursor-pointer hover:bg-primary/10" for="repeat-0">
+          日
+         </label>
+        </div>
+       </div>
+      </div>
+      <div class="mb-5">
+       <label class="flex items-center space-x-2 cursor-pointer">
+        <input checked="" class="w-5 h-5 text-primary rounded focus:ring-primary/20" type="checkbox">
+        <span class="text-gray-700">
+         启用语音提醒
+        </span>
+       </label>
+      </div>
+      <div class="flex space-x-3">
+       <button class="btn-secondary flex-1" id="cancel-reminder-btn">
+        取消
+       </button>
+       <button class="btn-primary flex-1" id="save-reminder-btn">
+        保存提醒
+       </button>
+      </div>
+     </div>
+    </div>
+   </div>
+  </div>
+  <!-- [/MODULE] nop_设置提醒模态框 -- 设置用药提醒的模态窗口，包含药品名称、服用剂量、提醒时间、重复设置和语音提醒选项 -->
+  <!-- [JSMOD] 78a_账号管理弹窗交互 -->
+  <script>
+   document.addEventListener('DOMContentLoaded', function () {
+  var accountModal = document.getElementById('account-modal');
+  var accountLink = document.querySelector('a[href="javascript:void(0);"]:has(.fa-user-circle)');
+  var closeModalBtn = document.getElementById('close-account-modal');
+  var cancelBtn = document.getElementById('cancel-account-btn');
+  var saveBtn = document.getElementById('save-account-btn');
+
+  // 打开弹窗
+  accountLink.addEventListener('click', function (e) {
+    e.preventDefault();
+    accountModal.classList.remove('hidden');
+  });
+
+  // 关闭弹窗
+  function closeModal() {
+    accountModal.classList.add('hidden');
+  }
+  closeModalBtn.addEventListener('click', closeModal);
+  cancelBtn.addEventListener('click', closeModal);
+
+  // 保存账号信息
+  saveBtn.addEventListener('click', function () {
+    var username = document.getElementById('account-username').value;
+    var email = document.getElementById('account-email').value;
+    var phone = document.getElementById('account-phone').value;
+
+    // 这里可以添加保存逻辑
+    alert('账号信息已保存');
+    closeModal();
+  });
+
+  // 点击弹窗外部关闭弹窗
+  accountModal.addEventListener('click', function (e) {
+    if (e.target === accountModal) {
+      closeModal();
+    }
+  });
+});
+  </script>
+  <!-- [/JSMOD] 78a_账号管理弹窗交互 -- 实现账号管理弹窗的显示、隐藏和保存功能 -->
+  <!-- [MODULE] qrs_设备管理模态框 -->
+  <div class="modal-overlay hidden flex items-center justify-center" id="devices-modal">
+   <div class="modal-content max-h-[90vh] overflow-y-auto">
+    <div class="p-5">
+     <div class="flex justify-between items-center mb-4">
+      <h3 class="text-xl font-bold">
+       设备管理
+      </h3>
+      <button class="text-gray-500 hover:text-dark" id="close-devices-modal">
+       <i class="fas fa-times text-xl">
+       </i>
+      </button>
+     </div>
+     <div class="mb-5">
+      <button class="btn-primary w-full mb-5 flex items-center justify-center" id="add-device-btn">
+       <i class="fas fa-plus mr-2">
+       </i>
+       添加新设备
+      </button>
+      <h4 class="text-lg font-medium mb-3">
+       已连接设备
+      </h4>
+      <div class="space-y-4">
+       <div class="bg-gray-50 rounded-xl p-4 flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+         <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
+          <i class="fas fa-watch text-blue-500 text-xl">
+          </i>
+         </div>
+         <div>
+          <h5 class="font-medium">
+           智能手环
+          </h5>
+          <p class="text-sm text-gray-50">
+           小米手环 7
+          </p>
+         </div>
+        </div>
+        <div class="flex items-center space-x-2">
+         <span class="badge bg-green-100 text-green-800">
+          已连接
+         </span>
+         <i class="fas fa-chevron-right text-gray-400">
+         </i>
+        </div>
+       </div>
+       <div class="bg-gray-50 rounded-xl p-4 flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+         <div class="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center">
+          <i class="fas fa-tint text-purple-500 text-xl">
+          </i>
+         </div>
+         <div>
+          <h5 class="font-medium">
+           血糖仪
+          </h5>
+          <p class="text-sm text-gray-50">
+           强生稳捷
+          </p>
+         </div>
+        </div>
+        <div class="flex items-center space-x-2">
+         <span class="badge bg-green-100 text-green-800">
+          已连接
+         </span>
+         <i class="fas fa-chevron-right text-gray-400">
+         </i>
+        </div>
+       </div>
+      </div>
+      <h4 class="text-lg font-medium mb-3 mt-6">
+       可用设备
+      </h4>
+      <div class="space-y-4">
+       <div class="bg-gray-50 rounded-xl p-4 flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+         <div class="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center">
+          <i class="fas fa-heartbeat text-red-500 text-xl">
+          </i>
+         </div>
+         <div>
+          <h5 class="font-medium">
+           心率监测仪
+          </h5>
+          <p class="text-sm text-gray-50">
+           华为心率监测仪
+          </p>
+         </div>
+        </div>
+        <button class="text-primary text-sm font-medium">
+         连接
+        </button>
+       </div>
+       <div class="bg-gray-50 rounded-xl p-4 flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+         <div class="w-12 h-12 rounded-full bg-yellow-100 flex items-center justify-center">
+          <i class="fas fa-bed text-yellow-500 text-xl">
+          </i>
+         </div>
+         <div>
+          <h5 class="font-medium">
+           睡眠监测器
+          </h5>
+          <p class="text-sm text-gray-50">
+           Fitbit 睡眠监测器
+          </p>
+         </div>
+        </div>
+        <button class="text-primary text-sm font-medium">
+         连接
+        </button>
+       </div>
+      </div>
+     </div>
+    </div>
+   </div>
+  </div>
+  <!-- [/MODULE] qrs_设备管理模态框 -- 设备管理的模态窗口，包含已连接设备和可用设备列表，以及添加新设备按钮 -->
+  <!-- [MODULE] tuv_健康报告模态框 -->
+  <div class="modal-overlay hidden flex items-center justify-center" id="report-modal">
+   <div class="modal-content max-h-[90vh] overflow-y-auto">
+    <div class="p-5">
+     <div class="flex justify-between items-center mb-4">
+      <h3 class="text-xl font-bold">
+       健康报告
+      </h3>
+      <button class="text-gray-500 hover:text-dark" id="close-report-modal">
+       <i class="fas fa-times text-xl">
+       </i>
+      </button>
+     </div>
+     <div class="mb-5">
+      <div class="flex space-x-2 mb-4 overflow-x-auto pb-2 scrollbar-hide">
+       <button class="whitespace-nowrap px-4 py-2 rounded-full bg-primary text-white text-sm font-medium">
+        本周报告
+       </button>
+       <button class="whitespace-nowrap px-4 py-2 rounded-full bg-gray-100 text-gray-700 text-sm font-medium">
+        本月报告
+       </button>
+       <button class="whitespace-nowrap px-4 py-2 rounded-full bg-gray-100 text-gray-700 text-sm font-medium">
+        季度报告
+       </button>
+       <button class="whitespace-nowrap px-4 py-2 rounded-full bg-gray-100 text-gray-700 text-sm font-medium">
+        年度报告
+       </button>
+      </div>
+      <div class="bg-gradient-primary text-white rounded-xl p-5 mb-5">
+       <div class="flex justify-between items-start mb-4">
+        <div>
+         <h4 class="text-lg font-bold">
+          健康评分
+         </h4>
+         <p class="text-primary-light/80 text-sm">
+          2023年11月13日 - 11月19日
+         </p>
+        </div>
+        <div class="bg-white/20 backdrop-blur-sm rounded-lg px-3 py-1">
+         <span class="text-2xl font-bold">
+          87
+         </span>
+         <span class="text-sm ml-1">
+          分
+         </span>
+        </div>
+        &gt;
+       </div>
+       <div class="w-full bg-white/20 rounded-full h-2 mb-1">
+        <div class="bg-white h-2 rounded-full" style="width: 87%">
+        </div>
+       </div>
+       <p class="text-xs text-white/80">
+        较上周提升3分，继续保持！
+       </p>
+      </div>
+      <div class="space-y-5">
+       <div>
+        <h4 class="text-lg font-medium mb-3">
+         健康趋势
+        </h4>
+        <div class="w-full h-48" id="health-trend-chart">
+        </div>
+       </div>
+       <div>
+        <h4 class="text-lg font-medium mb-3">
+         用药依从性
+        </h4>
+        <div class="bg-gray-50 rounded-xl p-4">
+         <div class="flex justify-between items-center mb-2">
+          <span class="text-sm text-gray-600">
+           本周用药完成率
+          </span>
+          <span class="font-medium">
+           92%
+          </span>
+         </div>
+         <div class="w-full bg-gray-200 rounded-full h-2 mb-3">
+          <div class="bg-secondary h-2 rounded-full" style="width: 92%">
+          </div>
+         </div>
+         <p class="text-sm text-gray-600">
+          您的用药依从性良好，继续保持按时服药的习惯。
+         </p>
+        </div>
+       </div>
+       <div>
+        <h4 class="text-lg font-medium mb-3">
+         健康建议
+        </h4>
+        <div class="bg-blue-50 rounded-xl p-4 border-l-4 border-primary">
+         <h5 class="font-medium mb-1">
+          血糖管理建议
+         </h5>
+         <p class="text-sm text-gray-700">
+          您的血糖水平略高于正常范围，建议减少精制碳水化合物摄入，增加每日步行时间至30分钟以上。
+         </p>
+        </div>
+       </div>
+      </div>
+      <button class="btn-primary w-full mt-5 flex items-center justify-center">
+       <i class="fas fa-download mr-2">
+       </i>
+       导出报告
+      </button>
+     </div>
+    </div>
+   </div>
+  </div>
+  <!-- [/MODULE] tuv_健康报告模态框 -- 健康报告的模态窗口，包含健康评分、健康趋势图表、用药依从性和健康建议 -->
+  <!-- [JSMOD] wxy_日期和图表初始化 -->
+  <script id="date-chart-script">
+   // 设置当前日期
+document.addEventListener('DOMContentLoaded', function () {
+  var now = new Date();
+  var options = {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  };
+  document.getElementById('current-date').textContent = now.toLocaleDateString('zh-CN', options);
+  // 初始化血糖趋势图表
+  var bloodSugarChart = echarts.init(document.getElementById('blood-sugar-chart'));
+  var bloodSugarOption = {
+    grid: {
+      top: '5%',
+      right: '5%',
+      bottom: '15%',
+      left: '5%'
+    },
+    xAxis: {
+      type: 'category',
+      data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
+      axisLine: {
+        show: false
+      },
+      axisTick: {
+        show: false
+      },
+      axisLabel: {
+        color: '#6B7280'
+      }
+    },
+    yAxis: {
+      type: 'value',
+      min: 4,
+      max: 8,
+      interval: 1,
+      axisLine: {
+        show: false
+      },
+      axisTick: {
+        show: false
+      },
+      axisLabel: {
+        color: '#6B7280',
+        formatter: '{value} mmol/L'
+      },
+      splitLine: {
+        lineStyle: {
+          color: '#F3F4F6'
+        }
+      }
+    },
+    series: [{
+      data: [5.8, 6.2, 5.9, 5.7, 5.5, 5.4, 5.4],
+      type: 'line',
+      smooth: true,
+      symbol: 'circle',
+      symbolSize: 8,
+      itemStyle: {
+        color: '#3B82F6'
+      },
+      lineStyle: {
+        color: '#3B82F6',
+        width: 2
+      },
+      areaStyle: {
+        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+          offset: 0,
+          color: 'rgba(59, 130, 246, 0.2)'
+        }, {
+          offset: 1,
+          color: 'rgba(59, 130, 246, 0)'
+        }])
+      }
+    }]
+  };
+  bloodSugarChart.setOption(bloodSugarOption);
+
+  // 初始化心率趋势图表
+  var heartRateChart = echarts.init(document.getElementById('heart-rate-chart'));
+  var heartRateOption = {
+    grid: {
+      top: '2%',
+      right: '2%',
+      bottom: '8%',
+      left: '2%'
+    },
+    xAxis: {
+      type: 'category',
+      data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
+      axisLine: {
+        show: false
+      },
+      axisTick: {
+        show: false
+      },
+axisLabel: {
+        color: '#4B5563',
+        fontSize: 12,
+        fontWeight: 500
+      }
+    },
+    yAxis: {
+      type: 'value',
+      min: 60,
+      max: 90,
+      interval: 10,
+      axisLine: {
+        show: false
+      },
+      axisTick: {
+        show: false
+      },
+      axisLabel: {
+        color: '#4B5563',
+        fontSize: 12,
+        fontWeight: 500,
+        formatter: '{value} bpm'
+      },
+      splitLine: {
+        lineStyle: {
+          color: '#F3F4F6'
+        }
+      }
+    },
+    series: [{
+      data: [72, 75, 70, 78, 74, 76, 73],
+      type: 'line',
+      smooth: true,
+      symbol: 'circle',
+      symbolSize: 8,
+      itemStyle: {
+        color: '#EF4444'
+      },
+      lineStyle: {
+        color: '#EF4444',
+        width: 2
+      },
+      areaStyle: {
+        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+          offset: 0,
+          color: 'rgba(239, 68, 68, 0.2)'
+        }, {
+          offset: 1,
+          color: 'rgba(239, 68, 68, 0)'
+        }])
+      }
+    }]
+  };
+  heartRateChart.setOption(heartRateOption);
+
+  // 初始化睡眠时长图表
+  var sleepChart = echarts.init(document.getElementById('sleep-chart'));
+  var sleepOption = {
+    grid: {
+      top: '2%',
+      right: '2%',
+      bottom: '8%',
+      left: '2%'
+    },
+    xAxis: {
+      type: 'category',
+      data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
+      axisLine: {
+        show: false
+      },
+      axisTick: {
+        show: false
+      },
+axisLabel: {
+        color: '#4B5563',
+        fontSize: 12,
+        fontWeight: 500
+      }
+    },
+    yAxis: {
+      type: 'value',
+      min: 5,
+      max: 9,
+      interval: 1,
+      axisLine: {
+        show: false
+      },
+      axisTick: {
+        show: false
+      },
+      axisLabel: {
+        color: '#4B5563',
+        fontSize: 12,
+        fontWeight: 500,
+        formatter: '{value} 小时'
+      },
+      splitLine: {
+        lineStyle: {
+          color: '#F3F4F6'
+        }
+      }
+    },
+    series: [{
+      data: [7.5, 7.2, 7.8, 7.0, 7.3, 8.0, 7.6],
+      type: 'line',
+      smooth: true,
+      symbol: 'circle',
+      symbolSize: 8,
+      itemStyle: {
+        color: '#8B5CF6'
+      },
+      lineStyle: {
+        color: '#8B5CF6',
+        width: 2
+      },
+      areaStyle: {
+        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+          offset: 0,
+          color: 'rgba(139, 92, 246, 0.2)'
+        }, {
+          offset: 1,
+          color: 'rgba(139, 92, 246, 0)'
+        }])
+      }
+    }]
+  };
+  sleepChart.setOption(sleepOption);
+
+  // 实时心率动画
+  var canvas = document.getElementById('heart-rate-pulse');
+  if (canvas) {
+    var drawPulse = function drawPulse() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // 绘制外圈脉冲
+      ctx.beginPath();
+      ctx.arc(radius, radius, radius * 0.8, 0, Math.PI * 2);
+      ctx.strokeStyle = "rgba(239, 68, 68,".concat(0.3 + Math.sin(pulse) * 0.2, ")");
+      ctx.lineWidth = 4;
+      ctx.stroke();
+
+      // 绘制内圈
+      ctx.beginPath();
+      ctx.arc(radius, radius, radius * 0.6, 0, Math.PI * 2);
+      ctx.strokeStyle = '#EF4444';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      pulse += pulseSpeed;
+      requestAnimationFrame(drawPulse);
+    };
+    var ctx = canvas.getContext('2d');
+    var radius = canvas.width / 2;
+    var pulse = 0;
+    var pulseSpeed = 0.05;
+    drawPulse();
+  }
+
+  // 实时心率更新
+  function updateHeartRate() {
+    var currentHeartRate = document.getElementById('current-heart-rate');
+    var heartRateTime = document.getElementById('heart-rate-time');
+    if (currentHeartRate && heartRateTime) {
+      var newRate = 65 + Math.floor(Math.random() * 20);
+      currentHeartRate.textContent = newRate;
+      heartRateTime.textContent = new Date().toLocaleTimeString('zh-CN', {
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+  }
+  setInterval(updateHeartRate, 5000);
+
+  // 监听窗口大小变化，调整图表大小
+  window.addEventListener('resize', function () {
+    bloodSugarChart.resize();
+    heartRateChart.resize();
+    sleepChart.resize();
+    if (window.healthTrendChart) {
+      window.healthTrendChart.resize();
+    }
+  });
+  // 存储图表实例，供后续使用
+  window.bloodSugarChart = bloodSugarChart;
+  window.heartRateChart = heartRateChart;
+  window.sleepChart = sleepChart;
+});
+  </script>
+  <!-- [/JSMOD] wxy_日期和图表初始化 -- 设置当前日期并初始化血糖趋势、心率趋势和睡眠时长图表 -->
+  <!-- [JSMOD] abc_个人信息编辑逻辑 -->
+  <script id="profile-edit-script">
+   document.addEventListener('DOMContentLoaded', function () {
+  // 获取DOM元素
+  var editBtn = document.getElementById('edit-profile-btn');
+  var modal = document.getElementById('edit-profile-modal');
+  var closeBtn = document.getElementById('close-modal-btn');
+  var cancelBtn = document.getElementById('cancel-btn');
+  var form = document.getElementById('profile-form');
+  var heightInput = document.getElementById('height-input');
+  var weightInput = document.getElementById('weight-input');
+  var bloodTypeInput = document.getElementById('blood-type-input');
+  var bmiValue = document.getElementById('bmi-value');
+
+  // 打开弹窗
+  editBtn.addEventListener('click', function () {
+    modal.classList.remove('hidden');
+  });
+
+  // 关闭弹窗
+  function closeModal() {
+    modal.classList.add('hidden');
+  }
+  closeBtn.addEventListener('click', closeModal);
+  cancelBtn.addEventListener('click', closeModal);
+
+  // 点击弹窗外部关闭弹窗
+  modal.addEventListener('click', function (e) {
+    if (e.target === modal) {
+      closeModal();
+    }
+  });
+
+  // 表单提交
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var height = parseFloat(heightInput.value);
+    var weight = parseFloat(weightInput.value);
+    var bloodType = bloodTypeInput.value;
+
+    // 更新个人信息展示
+    document.querySelectorAll('.flex.justify-between.items-center')[0].querySelector('span:last-child').textContent = height + "cm";
+    document.querySelectorAll('.flex.justify-between.items-center')[1].querySelector('span:last-child').textContent = weight + "kg";
+    document.querySelectorAll('.flex.justify-between.items-center')[2].querySelector('span:last-child').textContent = bloodType;
+
+    // 计算BMI
+    var bmi = weight / (height / 100) ** 2;
+    bmiValue.textContent = bmi.toFixed(2);
+
+    // 关闭弹窗
+    closeModal();
+  });
+});
+  </script>
+  <!-- [JSMOD] xyz_姓名编辑逻辑 -->
+  <script id="name-edit-script">
+   document.addEventListener('DOMContentLoaded', function () {
+  // 获取DOM元素
+  var editNameBtn = document.getElementById('edit-name-btn');
+  var nameModal = document.getElementById('edit-name-modal');
+  var closeNameModalBtn = document.getElementById('close-name-modal-btn');
+  var cancelNameBtn = document.getElementById('cancel-name-btn');
+  var nameForm = document.getElementById('name-form');
+  var nameInput = document.getElementById('name-input');
+  var profileName = document.getElementById('profile-name');
+  var homeGreeting = document.querySelector('#home-page h2');
+
+  // 打开弹窗
+  editNameBtn.addEventListener('click', function () {
+    nameInput.value = profileName.textContent.trim();
+    nameModal.classList.remove('hidden');
+  });
+
+  // 关闭弹窗
+  function closeNameModal() {
+    nameModal.classList.add('hidden');
+  }
+  closeNameModalBtn.addEventListener('click', closeNameModal);
+  cancelNameBtn.addEventListener('click', closeNameModal);
+
+  // 点击弹窗外部关闭弹窗
+  nameModal.addEventListener('click', function (e) {
+    if (e.target === nameModal) {
+      closeNameModal();
+    }
+  });
+
+  // 表单提交
+  nameForm.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var newName = nameInput.value.trim();
+    if (newName) {
+      // 更新我的页面姓名
+      profileName.textContent = newName;
+      // 更新首页称呼
+      homeGreeting.textContent = '您好，' + newName;
+      // 关闭弹窗
+      closeNameModal();
+    }
+  });
+});
+  </script>
+  <!-- [/JSMOD] xyz_姓名编辑逻辑 -- 处理姓名编辑弹窗的打开、关闭和表单提交，同步更新首页称呼 -->
+  <!-- [/JSMOD] abc_个人信息编辑逻辑 -- 处理个人信息编辑弹窗的打开、关闭和表单提交 -->
+  <!-- [JSMOD] z12_模态框控制 -->
+  <script id="modal-control-script">
+   document.addEventListener('DOMContentLoaded', function () {
+  // 添加时间槽功能
+  var addTimeBtn = document.getElementById('add-time-btn');
+  var timeSlotsContainer = document.getElementById('time-slots');
+  if (addTimeBtn && timeSlotsContainer) {
+    addTimeBtn.addEventListener('click', function () {
+      var newTimeSlot = document.createElement('div');
+      newTimeSlot.className = 'flex items-center space-x-3 time-slot';
+      newTimeSlot.innerHTML = "<input class=\"input-field\" type=\"time\" value=\"12:00\"/>\n        <button class=\"text-primary hover:text-primary/80 delete-time-btn\">\n          <i class=\"fas fa-trash-alt\"></i>\n        </button>";
+      timeSlotsContainer.appendChild(newTimeSlot);
+
+      // 为新添加的删除按钮添加事件监听
+      var deleteBtn = newTimeSlot.querySelector('.delete-time-btn');
+      deleteBtn.addEventListener('click', function () {
+        newTimeSlot.remove();
+      });
+    });
+
+    // 为初始的删除按钮添加事件监听
+    document.querySelectorAll('.delete-time-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        btn.closest('.time-slot').remove();
+      });
+    });
+  }
+
+  // 重复选择功能
+  var repeatLabels = document.querySelectorAll('[for^="repeat-"]');
+  repeatLabels.forEach(function (label) {
+    var checkbox = document.getElementById(label.getAttribute('for'));
+    if (checkbox) {
+      checkbox.addEventListener('change', function () {
+        if (this.checked) {
+          label.classList.remove('bg-gray-100', 'text-gray-600');
+          label.classList.add('bg-primary', 'text-white');
+        } else {
+          label.classList.remove('bg-primary', 'text-white');
+          label.classList.add('bg-gray-100', 'text-gray-600');
+        }
+      });
+    }
+  });
+
+  // 获取模态框元素
+  var medicationModal = document.getElementById('medication-modal');
+  var reminderModal = document.getElementById('reminder-modal');
+  var devicesModal = document.getElementById('devices-modal');
+  var reportModal = document.getElementById('report-modal');
+  // 获取打开模态框的按钮
+  var medicationBtn = document.getElementById('medication-btn');
+  var reminderBtn = document.getElementById('reminder-btn');
+  var devicesBtn = document.getElementById('devices-btn');
+  var reportBtn = document.getElementById('report-btn');
+  var setReminderBtn = document.getElementById('set-reminder-btn');
+  // 获取关闭模态框的按钮
+  var closeMedicationModal = document.getElementById('close-medication-modal');
+  var closeReminderModal = document.getElementById('close-reminder-modal');
+  var closeDevicesModal = document.getElementById('close-devices-modal');
+  var closeReportModal = document.getElementById('close-report-modal');
+  var cancelReminderBtn = document.getElementById('cancel-reminder-btn');
+  // 获取模态框元素
+  var medicationModal = document.getElementById('medication-modal');
+  var reminderModal = document.getElementById('reminder-modal');
+  var devicesModal = document.getElementById('devices-modal');
+  var reportModal = document.getElementById('report-modal');
+  // 获取打开模态框的按钮
+  var medicationBtn = document.getElementById('medication-btn');
+  var reminderBtn = document.getElementById('reminder-btn');
+  var devicesBtn = document.getElementById('devices-btn');
+  var reportBtn = document.getElementById('report-btn');
+  var setReminderBtn = document.getElementById('set-reminder-btn');
+  // 获取关闭模态框的按钮
+  var closeMedicationModal = document.getElementById('close-medication-modal');
+  var closeReminderModal = document.getElementById('close-reminder-modal');
+  var closeDevicesModal = document.getElementById('close-devices-modal');
+  var closeReportModal = document.getElementById('close-report-modal');
+  var cancelReminderBtn = document.getElementById('cancel-reminder-btn');
+  // 打开药品识别模态框
+  medicationBtn.addEventListener('click', function () {
+    medicationModal.classList.remove('hidden');
+    medicationModal.classList.add('flex');
+    document.body.style.overflow = 'hidden';
+  });
+  // 打开提醒设置模态框
+  reminderBtn.addEventListener('click', function () {
+    reminderModal.classList.remove('hidden');
+    reminderModal.classList.add('flex');
+    document.body.style.overflow = 'hidden';
+  });
+  // 打开设备管理模态框
+  devicesBtn.addEventListener('click', function () {
+    devicesModal.classList.remove('hidden');
+    devicesModal.classList.add('flex');
+    document.body.style.overflow = 'hidden';
+  });
+  // 打开健康报告模态框
+  reportBtn.addEventListener('click', function () {
+    reportModal.classList.remove('hidden');
+    reportModal.classList.add('flex');
+    document.body.style.overflow = 'hidden';
+    // 初始化健康趋势图表
+    initHealthTrendChart();
+  });
+  // 从药品识别模态框打开提醒设置模态框
+  setReminderBtn.addEventListener('click', function () {
+    medicationModal.classList.add('hidden');
+    medicationModal.classList.remove('flex');
+    reminderModal.classList.remove('hidden');
+    reminderModal.classList.add('flex');
+  });
+  // 关闭药品识别模态框
+  closeMedicationModal.addEventListener('click', function () {
+    medicationModal.classList.add('hidden');
+    medicationModal.classList.remove('flex');
+    document.body.style.overflow = 'auto';
+  });
+  //关闭提醒设置模态框
+  closeReminderModal.addEventListener('click', function () {
+    reminderModal.classList.add('hidden');
+    reminderModal.classList.remove('flex');
+    document.body.style.overflow = 'auto';
+  });
+  //关闭设备管理模态框
+  closeDevicesModal.addEventListener('click', function () {
+    devicesModal.classList.add('hidden');
+    devicesModal.classList.remove('flex');
+    document.body.style.overflow = 'auto';
+  });
+  //关闭健康报告模态框
+  closeReportModal.addEventListener('click', function () {
+    reportModal.classList.add('hidden');
+    reportModal.classList.remove('flex');
+    document.body.style.overflow = 'auto';
+  });
+  //取消提醒设置
+  cancelReminderBtn.addEventListener('click', function () {
+    reminderModal.classList.add('hidden');
+    reminderModal.classList.remove('flex');
+    medicationModal.classList.remove('hidden');
+    medicationModal.classList.add('flex');
+  });
+  //点击模态框背景关闭模态框
+  reminderModal.addEventListener('click', function (e) {
+    if (e.target === reminderModal) {
+      reminderModal.classList.add('hidden');
+      reminderModal.classList.remove('flex');
+      document.body.style.overflow = 'auto';
+    }
+  });
+  devicesModal.addEventListener('click', function (e) {
+    if (e.target === devicesModal) {
+      devicesModal.classList.add('hidden');
+      devicesModal.classList.remove('flex');
+      document.body.style.overflow = 'auto';
+    }
+  });
+  reportModal.addEventListener('click', function (e) {
+    if (e.target === reportModal) {
+      reportModal.classList.add('hidden');
+      reportModal.classList.remove('flex');
+      document.body.style.overflow = 'auto';
+    }
+  });
+  //药品识别模态框内的按钮事件
+  var takePhotoBtn = document.getElementById('take-photo-btn');
+  var uploadPhotoBtn = document.getElementById('upload-photo-btn');
+  var closeMedicationModalBtn = document.getElementById('close-medication-modal');
+  var medicineResult = document.getElementById('medicine-result');
+  //模拟拍摄照片
+  takePhotoBtn.addEventListener('click', function () {
+    //显示加载状态
+    takePhotoBtn.disabled = true;
+    takePhotoBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> 识别中...';
+    //模拟识别过程
+    setTimeout(function () {
+      //显示识别结果
+      medicineResult.classList.remove('hidden');
+      //恢复按钮状态
+      takePhotoBtn.disabled = false;
+      takePhotoBtn.innerHTML = '<i class="fas fa-camera mr-2"></i> 重新拍摄';
+      //滚动到结果区域
+      medicineResult.scrollIntoView({
+        behavior: 'smooth'
+      });
+    }, 2000);
+  });
+  //模拟从相册选择照片  
+  uploadPhotoBtn.addEventListener('click', function () {
+    //显示加载状态
+    uploadPhotoBtn.disabled = true;
+    uploadPhotoBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> 加载中...';
+    //模拟加载和识别过程
+    setTimeout(function () {
+      //显示识别结果
+      medicineResult.classList.remove('hidden');
+      //恢复按钮状态
+      uploadPhotoBtn.disabled = false;
+      uploadPhotoBtn.innerHTML = '<i class="fas fa-upload mr-2"></i> 重新选择';
+      //滚动到结果区域
+      medicineResult.scrollIntoView({
+        behavior: 'smooth'
+      });
+    }, 1500);
+  });
+  //保存提醒按钮事件
+  var saveReminderBtn = document.getElementById('save-reminder-btn');
+  saveReminderBtn.addEventListener('click', function () {
+    //显示保存状态
+    saveReminderBtn.disabled = true;
+    saveReminderBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> 保存中...';
+    //模拟保存过程
+    setTimeout(function () {
+      //关闭提醒模态框
+      reminderModal.classList.add('hidden');
+      reminderModal.classList.remove('flex');
+      document.body.style.overflow = 'auto';
+      //显示成功提示
+      alert('用药提醒设置成功！');
+      //恢复按钮状态
+      saveReminderBtn.disabled = false;
+      saveReminderBtn.innerHTML = '保存提醒';
+    }, 1500);
+  });
+  //添加设备按钮事件
+  var addDeviceBtn = document.getElementById('add-device-btn');
+  addDeviceBtn.addEventListener('click', function () {
+    alert('正在搜索附近的设备...');
+  });
+  //初始化健康趋势图表
+  function initHealthTrendChart() {
+    if (!window.healthTrendChart) {
+      window.healthTrendChart = echarts.init(document.getElementById('health-trend-chart'));
+    }
+    var healthTrendOption = {
+      grid: {
+        top: '5%',
+        right: '5%',
+        bottom: '15%',
+        left: '5%'
+      },
+      xAxis: {
+        type: 'category',
+        data: ['第1周', '第2周', '第3周', '第4周'],
+        axisLine: {
+          show: false
+        },
+        axisTick: {
+          show: false
+        },
+        axisLabel: {
+          color: '#6B7280'
+        }
+      },
+      yAxis: {
+        type: 'value',
+        min: 70,
+        max: 95,
+        interval: 5,
+        axisLine: {
+          show: false
+        },
+        axisTick: {
+          show: false
+        },
+        axisLabel: {
+          color: '#6B7280',
+          formatter: '{value} 分'
+        },
+        splitLine: {
+          lineStyle: {
+            color: '#F3F4F6'
+          }
+        }
+      },
+      series: [{
+        name: '健康评分',
+        data: [82, 80, 84, 87],
+        type: 'line',
+        smooth: true,
+        symbol: 'circle',
+        symbolSize: 8,
+        itemStyle: {
+          color: '#3B82F6'
+        },
+        lineStyle: {
+          color: '#3B82F6',
+          width: 2
+        },
+        areaStyle: {
+          color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+            offset: 0,
+            color: 'rgba(59, 130, 246, 0.2)'
+          }, {
+            offset: 1,
+            color: 'rgba(59, 130, 246, 0)'
+          }])
+        }
+      }, {
+        name: '用药依从性',
+        data: [75, 85, 88, 92],
+        type: 'line',
+        smooth: true,
+        symbol: 'circle',
+        symbolSize: 8,
+        itemStyle: {
+          color: '#10B981'
+        },
+        lineStyle: {
+          color: '#10B981',
+          width: 2
+        }
+      }],
+      legend: {
+        bottom: 0,
+        left: 'center',
+        textStyle: {
+          color: '#6B7280',
+          fontSize: 12
+        },
+        itemWidth: 10,
+        itemHeight: 10
+      }
+    };
+    window.healthTrendChart.setOption(healthTrendOption);
+  }
+});
+  </script>
+  <!-- [/JSMOD] z12_模态框控制 -- 控制各个模态框的显示和隐藏，处理模态框内的交互逻辑 -->
+  <!-- [JSMOD] abc_通知弹窗控制 -->
+  <script id="notification-script">
+   document.addEventListener('DOMContentLoaded', function () {
+  var notificationBtn = document.getElementById('notification-btn');
+  var notificationPanel = document.getElementById('notification-panel');
+
+  // 切换通知面板显示/隐藏
+  notificationBtn.addEventListener('click', function (e) {
+    e.stopPropagation();
+    notificationPanel.classList.toggle('hidden');
+  });
+
+  // 点击页面其他地方关闭通知面板
+  document.addEventListener('click', function (e) {
+    if (!notificationPanel.contains(e.target) && e.target !== notificationBtn) {
+      notificationPanel.classList.add('hidden');
+    }
+  });
+});
+  </script>
+  <!-- [/JSMOD] abc_通知弹窗控制 -- 控制通知弹窗的显示和隐藏 -->
+  <!-- [JSMOD] def_头像上传逻辑 -->
+  <script id="avatar-upload-script">
+   document.addEventListener('DOMContentLoaded', function () {
+  // 获取DOM元素
+  var avatarModal = document.getElementById('avatar-modal');
+  var closeAvatarModal = document.getElementById('close-avatar-modal');
+  var cancelAvatarBtn = document.getElementById('cancel-avatar-btn');
+  var takePhotoAvatarBtn = document.getElementById('take-photo-avatar');
+  var uploadAvatarBtn = document.getElementById('upload-avatar');
+  var userAvatar = document.getElementById('user-avatar');
+  var currentAvatarPreview = document.getElementById('current-avatar-preview');
+
+  // 打开头像上传弹窗
+  userAvatar.addEventListener('click', function () {
+    avatarModal.classList.remove('hidden');
+    // 更新预览头像
+    currentAvatarPreview.src = userAvatar.src;
+  });
+
+  // 关闭头像上传弹窗
+  function closeAvatarModalFunc() {
+    avatarModal.classList.add('hidden');
+  }
+  closeAvatarModal.addEventListener('click', closeAvatarModalFunc);
+  cancelAvatarBtn.addEventListener('click', closeAvatarModalFunc);
+
+  // 点击弹窗外部关闭弹窗
+  avatarModal.addEventListener('click', function (e) {
+    if (e.target === avatarModal) {
+      closeAvatarModalFunc();
+    }
+  });
+
+  // 拍照功能
+  takePhotoAvatarBtn.addEventListener('click', function () {
+    // 模拟拍照过程
+    takePhotoAvatarBtn.disabled = true;
+    takePhotoAvatarBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> 拍照中...';
+    setTimeout(function () {
+      // 模拟拍照成功，更新头像
+      var newAvatarUrl = 'https://design.gemcoder.com/api/searchImage?query=user profile avatar on white background, clean and modern design, new photo&amp;width=120&amp;height=120';
+      userAvatar.src = newAvatarUrl;
+      currentAvatarPreview.src = newAvatarUrl;
+      takePhotoAvatarBtn.disabled = false;
+      takePhotoAvatarBtn.innerHTML = '<i class="fas fa-camera mr-2"></i> 拍照';
+      closeAvatarModalFunc();
+      alert('头像更换成功！');
+    }, 2000);
+  });
+
+  // 从相册选择功能
+  uploadAvatarBtn.addEventListener('click', function () {
+    // 模拟从相册选择图片
+    uploadAvatarBtn.disabled = true;
+    uploadAvatarBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> 加载中...';
+    setTimeout(function () {
+      // 模拟选择成功，更新头像
+      var newAvatarUrl = 'https://design.gemcoder.com/api/searchImage?query=user profile avatar on white background, clean and modern design, uploaded photo&amp;width=120&amp;height=120';
+      userAvatar.src = newAvatarUrl;
+      currentAvatarPreview.src = newAvatarUrl;
+      uploadAvatarBtn.disabled = false;
+      uploadAvatarBtn.innerHTML = '<i class="fas fa-upload mr-2"></i> 从相册选择';
+      closeAvatarModalFunc();
+      alert('头像更换成功！');
+    }, 1500);
+  });
+});
+  </script>
+  <!-- [/JSMOD] def_头像上传逻辑 -- 处理头像上传弹窗的打开、关闭和头像更换逻辑 -->
+  <!-- [JSMOD] klm_页面切换逻辑 -->
+  <script id="page-switch-script">
+   // 页面切换逻辑
+document.addEventListener('DOMContentLoaded', function () {
+  var navLinks = document.querySelectorAll('nav a');
+  var pages = document.querySelectorAll('.page-content');
+
+  // 默认显示首页
+  showPage('home-page');
+
+  // 为每个导航链接添加点击事件
+  navLinks.forEach(function (link) {
+    link.addEventListener('click', function (e) {
+      e.preventDefault();
+      var pageId = this.getAttribute('data-page');
+      showPage(pageId);
+
+      // 更新导航链接的激活状态
+      navLinks.forEach(function (nav) {
+        return nav.classList.remove('text-primary');
+      });
+      this.classList.add('text-primary');
+    });
+  });
+
+  // 显示指定页面，隐藏其他页面
+  function showPage(pageId) {
+    pages.forEach(function (page) {
+      if (page.id === pageId) {
+        page.classList.remove('hidden');
+      } else {
+        page.classList.add('hidden');
+      }
+    });
+  }
+});
+  </script>
+  <!-- [/JSMOD] klm_页面切换逻辑 -- 实现底部导航栏的页面切换功能 -->
+  <!-- [JSMOD] xyz_头像更换功能 -->
+  <script id="avatar-script">
+   document.addEventListener('DOMContentLoaded', function () {
+  var changeAvatarBtn = document.getElementById('change-avatar-btn');
+  var userAvatar = document.getElementById('user-avatar');
+  changeAvatarBtn.addEventListener('click', function () {
+    // 创建头像选择模态框
+    var modal = document.createElement('div');
+    modal.className = 'modal-overlay flex items-center justify-center';
+    modal.innerHTML = "<div class=\"modal-content p-4\">\n          <h3 class=\"text-lg font-bold mb-4\">\u66F4\u6362\u5934\u50CF</h3>\n          <div class=\"space-y-3\">\n            <button class=\"btn-primary w-full\" id=\"take-photo-btn\">\n              <i class=\"fas fa-camera mr-2\"></i>\u62CD\u7167\n            </button>\n            <button class=\"btn-secondary w-full\" id=\"upload-photo-btn\">\n              <i class=\"fas fa-upload mr-2\"></i>\u4ECE\u76F8\u518C\u9009\u62E9\n            </button>\n          </div>\n          <button class=\"mt-4 text-gray-500 w-full\" id=\"close-avatar-modal\">\u53D6\u6D88</button>\n        </div>";
+    document.body.appendChild(modal);
+
+    // 关闭模态框
+    var closeModal = document.getElementById('close-avatar-modal');
+    closeModal.addEventListener('click', function () {
+      modal.remove();
+    });
+
+    // 点击模态框背景关闭
+    modal.addEventListener('click', function (e) {
+      if (e.target === modal) {
+        modal.remove();
+      }
+    });
+
+    // 拍照功能
+    var takePhotoBtn = document.getElementById('take-photo-btn');
+    takePhotoBtn.addEventListener('click', function () {
+      // 模拟拍照并更新头像
+      userAvatar.src = 'https://design.gemcoder.com/api/searchImage?query=user profile avatar on white background, clean and modern design, new photo&amp;width=160&amp;height=160';
+      modal.remove();
+    });
+
+    // 上传照片功能
+    var uploadPhotoBtn = document.getElementById('upload-photo-btn');
+    uploadPhotoBtn.addEventListener('click', function () {
+      // 模拟上传并更新头像
+      userAvatar.src = 'https://design.gemcoder.com/api/searchImage?query=user profile avatar on white background, clean and modern design, uploaded photo&amp;width=160&amp;height=160';
+      modal.remove();
+    });
+  });
+});
+  </script>
+  <!-- [/JSMOD] xyz_头像更换功能 -- 实现头像拍照和从相册选择功能 -->
+ 
+
+</body></html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>项目结构</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+    background: #1a1a2e;
+    color: #e0e0e0;
+    padding: 40px;
+    min-height: 100vh;
+  }
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  h1 {
+    font-size: 28px;
+    color: #00d9ff;
+    margin-bottom: 30px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #00d9ff;
+  }
+  .tree {
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 15px;
+    line-height: 1.8;
+  }
+  .tree .dir { color: #4fc3f7; font-weight: bold; }
+  .tree .file { color: #c5e1a5; }
+  .tree .comment { color: #757575; }
+  .tree .root { color: #ff7043; font-weight: bold; font-size: 16px; }
+  .tree .line { padding-left: 0; }
+  .tree .line.l1 { padding-left: 20px; }
+  .tree .line.l2 { padding-left: 40px; }
+  .tree .line.l3 { padding-left: 60px; }
+  .tree .line.l4 { padding-left: 80px; }
+  .tree .line.l5 { padding-left: 100px; }
+  .tree .branch { color: #616161; }
+  .desc {
+    margin-top: 30px;
+    padding: 20px;
+    background: rgba(0, 217, 255, 0.05);
+    border-left: 3px solid #00d9ff;
+    border-radius: 4px;
+  }
+  .desc h3 { color: #00d9ff; margin-bottom: 10px; font-size: 16px; }
+  .desc p { color: #b0b0b0; font-size: 14px; line-height: 1.6; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>📁 项目结构 (health-app)</h1>
+  <div class="tree">
+    <div class="line root">health-app/</div>
+    <div class="line l1"><span class="branch">├─</span> <span class="dir">src/</span></div>
+    <div class="line l2"><span class="branch">│  ├─</span> <span class="dir">views/</span>               <span class="comment">// 页面视图组件</span></div>
+    <div class="line l3"><span class="branch">│  │  ├─</span> <span class="file">Dashboard.vue</span>      <span class="comment">// 首页仪表盘</span></div>
+    <div class="line l3"><span class="branch">│  │  ├─</span> <span class="file">HeartRate.vue</span>      <span class="comment">// 心率管理</span></div>
+    <div class="line l3"><span class="branch">│  │  ├─</span> <span class="file">SleepAnalysis.vue</span>  <span class="comment">// 睡眠分析</span></div>
+    <div class="line l3"><span class="branch">│  │  ├─</span> <span class="file">Medicine.vue</span>       <span class="comment">// 用药管理</span></div>
+    <div class="line l3"><span class="branch">│  │  ├─</span> <span class="file">Profile.vue</span>        <span class="comment">// 个人档案</span></div>
+    <div class="line l3"><span class="branch">│  │  ├─</span> <span class="file">DataCharts.vue</span>     <span class="comment">// 数据图表</span></div>
+    <div class="line l3"><span class="branch">│  │  └─</span> <span class="file">Login.vue</span>          <span class="comment">// 登录页面</span></div>
+    <div class="line l2"><span class="branch">│  ├─</span> <span class="dir">stores/</span>              <span class="comment">// Pinia 状态管理</span></div>
+    <div class="line l3"><span class="branch">│  │  ├─</span> <span class="file">auth.js</span>            <span class="comment">// 登录认证</span></div>
+    <div class="line l3"><span class="branch">│  │  ├─</span> <span class="file">health.js</span>          <span class="comment">// 健康指标</span></div>
+    <div class="line l3"><span class="branch">│  │  ├─</span> <span class="file">heartRate.js</span>       <span class="comment">// 心率记录</span></div>
+    <div class="line l3"><span class="branch">│  │  ├─</span> <span class="file">sleep.js</span>           <span class="comment">// 睡眠记录</span></div>
+    <div class="line l3"><span class="branch">│  │  ├─</span> <span class="file">medicine.js</span>        <span class="comment">// 用药管理</span></div>
+    <div class="line l3"><span class="branch">│  │  └─</span> <span class="file">profile.js</span>         <span class="comment">// 个人档案</span></div>
+    <div class="line l2"><span class="branch">│  ├─</span> <span class="dir">router/</span>              <span class="comment">// Vue Router 路由</span></div>
+    <div class="line l3"><span class="branch">│  │  └─</span> <span class="file">index.js</span>           <span class="comment">// 路由配置</span></div>
+    <div class="line l2"><span class="branch">│  ├─</span> <span class="dir">layouts/</span>             <span class="comment">// 布局组件</span></div>
+    <div class="line l2"><span class="branch">│  └─</span> <span class="file">main.js</span>              <span class="comment">// 应用入口</span></div>
+    <div class="line l1"><span class="branch">├─</span> <span class="file">index.html</span>             <span class="comment">// HTML 入口</span></div>
+    <div class="line l1"><span class="branch">├─</span> <span class="file">vite.config.js</span>         <span class="comment">// Vite 构建配置</span></div>
+    <div class="line l1"><span class="branch">├─</span> <span class="file">package.json</span>           <span class="comment">// 依赖管理</span></div>
+    <div class="line l1"><span class="branch">└─</span> <span class="file">README.md</span>              <span class="comment">// 项目说明</span></div>
+  </div>
+
+  <div class="desc">
+    <h3>技术栈</h3>
+    <p>Vue 3 + Vite 5 + Pinia + Vue Router + Ant Design Vue + ECharts</p>
+    <p>采用 Composition API 风格，状态管理使用 Pinia 并配合 localStorage 持久化</p>
+  </div>
+</div>
+</body>
+</html>

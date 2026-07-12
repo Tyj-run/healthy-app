@@ -1,0 +1,31 @@
+# 依赖目录
+node_modules/
+
+# 构建输出
+dist/
+
+# 编辑器
+.vscode/
+.idea/
+
+# 操作系统
+.DS_Store
+Thumbs.db
+
+# 日志
+*.log
+
+# 本地环境
+.env.local
+
+# 大文件（歌曲、压缩包）
+*.ncm
+*.zip
+
+# 临时文档
+~$*.docx
+
+# 子目录（不需要提交）
+m/
+前端大作业/
+上传/

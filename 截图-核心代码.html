@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>核心代码</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Consolas', 'Monaco', 'Fira Code', monospace;
+    background: #1e1e2e;
+    color: #cdd6f4;
+    padding: 30px;
+    min-height: 100vh;
+  }
+  .container {
+    max-width: 950px;
+    margin: 0 auto;
+  }
+  h1 {
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 22px;
+    color: #89b4fa;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #89b4fa;
+  }
+  .file-path {
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 13px;
+    color: #a6adc8;
+    margin-bottom: 12px;
+  }
+  pre {
+    background: #181825;
+    border-radius: 8px;
+    padding: 20px 24px;
+    overflow-x: auto;
+    font-size: 13.5px;
+    line-height: 1.7;
+    border: 1px solid #313244;
+  }
+  .code { color: #cdd6f4; }
+  .keyword { color: #cba6f7; }     /* import, const, function, return */
+  .function { color: #89b4fa; }    /* defineStore, ref, computed */
+  .string { color: #a6e3a1; }      /* 字符串 */
+  .comment { color: #6c7086; }     /* 注释 */
+  .variable { color: #f38ba8; }    /* 变量名 */
+  .method { color: #fab387; }      /* 方法调用 */
+  .property { color: #f9e2af; }   /* 属性名 */
+  .tag { color: #89b4fa; }        /* HTML 标签 */
+  .number { color: #fab387; }     /* 数字 */
+  .operator { color: #89dceb; }   /* 运算符 */
+  .punctuation { color: #9399b2; } /* 标点 */
+  .highlight {
+    background: rgba(249, 226, 175, 0.08);
+    border-left: 3px solid #f9e2af;
+    padding-left: 8px;
+    margin-left: -8px;
+  }
+  .desc {
+    margin-top: 25px;
+    padding: 18px 22px;
+    background: rgba(137, 180, 250, 0.06);
+    border-radius: 8px;
+    border: 1px solid #313244;
+  }
+  .desc h3 {
+    font-family: 'Segoe UI', sans-serif;
+    color: #89b4fa;
+    font-size: 15px;
+    margin-bottom: 10px;
+  }
+  .desc p {
+    font-family: 'Segoe UI', sans-serif;
+    color: #a6adc8;
+    font-size: 13.5px;
+    line-height: 1.7;
+  }
+  .desc .key { color: #f9e2af; }
+  .line-num {
+    display: inline-block;
+    width: 28px;
+    color: #6c7086;
+    text-align: right;
+    margin-right: 12px;
+    user-select: none;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>核心代码：Pinia Store + localStorage 持久化</h1>
+  <div class="file-path">src/stores/heartRate.js</div>
+  <pre><code>
+<span class="line-num">1</span> <span class="keyword">import</span> { defineStore } <span class="keyword">from</span> <span class="string">'pinia'</span>
+<span class="line-num">2</span> <span class="keyword">import</span> { ref, computed } <span class="keyword">from</span> <span class="string">'vue'</span>
+<span class="line-num">3</span> <span class="keyword">import</span> dayjs <span class="keyword">from</span> <span class="string">'dayjs'</span>
+<span class="line-num">4</span>
+<span class="line-num">5</span> <span class="keyword">const</span> <span class="variable">STORAGE_KEY</span> = <span class="string">'health_heartRateRecords'</span>
+<span class="line-num">6</span>
+<span class="line-num">7</span> <span class="comment">// 默认模拟数据</span>
+<span class="line-num">8</span> <span class="keyword">const</span> <span class="variable">DEFAULTS</span> = [
+<span class="line-num">9</span>   { id: <span class="number">1</span>, date: <span class="string">'2026-07-11'</span>, time: <span class="string">'08:00'</span>, value: <span class="number">72</span>, status: <span class="string">'正常'</span>, ... },
+<span class="line-num">10</span>   <span class="comment">// ...</span>
+<span class="line-num">11</span> ]
+<span class="line-num">12</span>
+<span class="line-num">13</span> <span class="comment">// 从 localStorage 加载数据</span>
+<span class="line-num">14</span> <span class="keyword">function</span> <span class="function">loadFromStorage</span>() {
+<span class="line-num">15</span>   <span class="keyword">try</span> {
+<span class="line-num">16</span>     <span class="keyword">const</span> saved = <span class="property">localStorage</span>.<span class="method">getItem</span>(<span class="variable">STORAGE_KEY</span>)
+<span class="line-num">17</span>     <span class="keyword">if</span> (saved) {
+<span class="line-num">18</span>       <span class="keyword">const</span> parsed = <span class="variable">JSON</span>.<span class="method">parse</span>(saved)
+<span class="line-num">19</span>       <span class="keyword">if</span> (<span class="variable">Array</span>.<span class="method">isArray</span>(parsed) <span class="operator">&&</span> parsed.length > <span class="number">0</span>) <span class="keyword">return</span> parsed
+<span class="line-num">20</span>     }
+<span class="line-num">21</span>   } <span class="keyword">catch</span> {}
+<span class="line-num">22</span>   <span class="keyword">return</span> <span class="keyword">null</span>
+<span class="line-num">23</span> }
+<span class="line-num">24</span>
+<span class="line-num">25</span> <span class="comment">// 保存数据到 localStorage</span>
+<span class="line-num">26</span> <span class="keyword">function</span> <span class="function">saveToStorage</span>(data) {
+<span class="line-num">27</span>   <span class="property">localStorage</span>.<span class="method">setItem</span>(<span class="variable">STORAGE_KEY</span>, <span class="variable">JSON</span>.<span class="method">stringify</span>(data))
+<span class="line-num">28</span> }
+<span class="line-num">29</span>
+<span class="line-num">30</span> <span class="keyword">export const</span> <span class="function">useHeartRateStore</span> = <span class="method">defineStore</span>(<span class="string">'heartRate'</span>, () => {
+<span class="line-num">31</span>   <span class="comment">// 初始化时自动从 localStorage 恢复</span>
+<span class="line-num">32</span>   <span class="keyword">const</span> saved = <span class="method">loadFromStorage</span>()
+<span class="line-num">33</span>   <span class="keyword">const</span> records = <span class="method">ref</span>(saved <span class="operator">||</span> [...<span class="variable">DEFAULTS</span>])
+<span class="line-num">34</span>   <span class="keyword">const</span> loading = <span class="method">ref</span>(<span class="keyword">false</span>)
+<span class="line-num">35</span>
+<span class="line-num">36</span>   <span class="keyword">function</span> <span class="function">persist</span>() {
+<span class="line-num">37</span>     <span class="method">saveToStorage</span>(records.value)
+<span class="line-num">38</span>   }
+<span class="line-num">39</span>
+<span class="line-num">40</span>   <span class="keyword">function</span> <span class="function">addRecord</span>(record) {
+<span class="line-num">41</span>     records.value.<span class="method">unshift</span>({ id: nextId.value, ...record })
+<span class="line-num">42</span>     <span class="method">persist</span>()  <span class="comment">// 增删改后自动持久化</span>
+<span class="line-num">43</span>   }
+<span class="line-num">44</span>
+<span class="line-num">45</span>   <span class="keyword">function</span> <span class="function">updateRecord</span>(id, data) {
+<span class="line-num">46</span>     <span class="comment">// ...</span>
+<span class="line-num">47</span>     <span class="method">persist</span>()
+<span class="line-num">48</span>   }
+<span class="line-num">49</span>
+<span class="line-num">50</span>   <span class="keyword">function</span> <span class="function">deleteRecord</span>(id) {
+<span class="line-num">51</span>     <span class="comment">// ...</span>
+<span class="line-num">52</span>     <span class="method">persist</span>()
+<span class="line-num">53</span>   }
+<span class="line-num">54</span>   <span class="comment">// ...</span>
+<span class="line-num">55</span> })
+  </code></pre>
+
+  <div class="desc">
+    <h3>核心设计思路</h3>
+    <p>
+      <span class="key">1. 初始化恢复</span>：store 创建时自动从 localStorage 读取数据，首次无数据则使用默认模拟数据。<br>
+      <span class="key">2. 自动持久化</span>：add / update / delete 操作后调用 persist() 即时写入 localStorage。<br>
+      <span class="key">3. 异常处理</span>：JSON.parse 包裹 try-catch，防止存储损坏导致应用崩溃。<br>
+      <span class="key">4. 数据结构</span>：每条记录包含 id、date、time、value、status、note 等字段，便于筛选和统计。
+    </p>
+  </div>
+</div>
+</body>
+</html>
